@@ -1,0 +1,1013 @@
+{
+  "coverage": {
+    "criteria": {
+      "advisories": {
+        "assessed_clean": 11,
+        "assessed_flagged": 0,
+        "unassessable": 0
+      },
+      "archived": {
+        "assessed_clean": 11,
+        "assessed_flagged": 0,
+        "unassessable": 0
+      },
+      "binary_artifacts": {
+        "assessed_clean": 0,
+        "assessed_flagged": 0,
+        "unassessable": 11
+      },
+      "code_review": {
+        "assessed_clean": 0,
+        "assessed_flagged": 0,
+        "unassessable": 11
+      },
+      "dangerous_workflow": {
+        "assessed_clean": 0,
+        "assessed_flagged": 0,
+        "unassessable": 11
+      },
+      "deprecated": {
+        "assessed_clean": 11,
+        "assessed_flagged": 0,
+        "unassessable": 0
+      },
+      "downloads": {
+        "assessed_clean": 11,
+        "assessed_flagged": 0,
+        "unassessable": 0
+      },
+      "install_script": {
+        "assessed_clean": 11,
+        "assessed_flagged": 0,
+        "unassessable": 0
+      },
+      "provenance": {
+        "assessed_clean": 11,
+        "assessed_flagged": 0,
+        "unassessable": 0
+      },
+      "publisher_concentration": {
+        "assessed_clean": 2,
+        "assessed_flagged": 3,
+        "unassessable": 6
+      },
+      "security_policy": {
+        "assessed_clean": 11,
+        "assessed_flagged": 0,
+        "unassessable": 0
+      },
+      "staleness": {
+        "assessed_clean": 11,
+        "assessed_flagged": 0,
+        "unassessable": 0
+      },
+      "token_permissions": {
+        "assessed_clean": 0,
+        "assessed_flagged": 0,
+        "unassessable": 11
+      }
+    },
+    "total_dependencies": 11
+  },
+  "dependencies": [
+    {
+      "dev": true,
+      "ecosystem": "npm",
+      "exists": true,
+      "flagged": [],
+      "name": "@tailwindcss/turbopack",
+      "non_registry_reason": null,
+      "repo": "github.com/tailwindlabs/tailwindcss",
+      "signals": {
+        "advisories": {
+          "detail": "no advisories recorded",
+          "state": "assessed_clean",
+          "value": []
+        },
+        "archived": {
+          "detail": "repository is active",
+          "state": "assessed_clean",
+          "value": false
+        },
+        "binary_artifacts": {
+          "detail": "the Scorecard API did not answer",
+          "state": "unassessable",
+          "value": null
+        },
+        "code_review": {
+          "detail": "the Scorecard API did not answer",
+          "state": "unassessable",
+          "value": null
+        },
+        "dangerous_workflow": {
+          "detail": "the Scorecard API did not answer",
+          "state": "unassessable",
+          "value": null
+        },
+        "deprecated": {
+          "detail": "not deprecated",
+          "state": "assessed_clean",
+          "value": false
+        },
+        "downloads": {
+          "detail": "3,058,665 downloads/week (normal volume)",
+          "state": "assessed_clean",
+          "value": 3058665
+        },
+        "install_script": {
+          "detail": "no install script",
+          "state": "assessed_clean",
+          "value": false
+        },
+        "provenance": {
+          "detail": "publishes with provenance",
+          "state": "assessed_clean",
+          "value": true
+        },
+        "publisher_concentration": {
+          "detail": "publishes from CI with provenance, so the effective publisher set is whoever can merge to the release branch \u2014 not externally observable",
+          "state": "unassessable",
+          "value": [
+            "reinink",
+            "adamwathan",
+            "malfaitrobin"
+          ]
+        },
+        "security_policy": {
+          "detail": "no security policy found",
+          "state": "assessed_clean",
+          "value": false
+        },
+        "staleness": {
+          "detail": "pushed 1 days ago",
+          "state": "assessed_clean",
+          "value": "2026-11-20T18:53:02Z"
+        },
+        "token_permissions": {
+          "detail": "the Scorecard API did not answer",
+          "state": "unassessable",
+          "value": null
+        }
+      },
+      "version": "4.3.3",
+      "version_source": "lockfile"
+    },
+    {
+      "dev": true,
+      "ecosystem": "npm",
+      "exists": true,
+      "flagged": [
+        "publisher_concentration"
+      ],
+      "name": "@types/node",
+      "non_registry_reason": null,
+      "repo": "github.com/DefinitelyTyped/DefinitelyTyped",
+      "signals": {
+        "advisories": {
+          "detail": "no advisories recorded",
+          "state": "assessed_clean",
+          "value": []
+        },
+        "archived": {
+          "detail": "repository is active",
+          "state": "assessed_clean",
+          "value": false
+        },
+        "binary_artifacts": {
+          "detail": "the Scorecard API did not answer",
+          "state": "unassessable",
+          "value": null
+        },
+        "code_review": {
+          "detail": "the Scorecard API did not answer",
+          "state": "unassessable",
+          "value": null
+        },
+        "dangerous_workflow": {
+          "detail": "the Scorecard API did not answer",
+          "state": "unassessable",
+          "value": null
+        },
+        "deprecated": {
+          "detail": "not deprecated",
+          "state": "assessed_clean",
+          "value": false
+        },
+        "downloads": {
+          "detail": "668,203,298 downloads/week (normal volume)",
+          "state": "assessed_clean",
+          "value": 668203298
+        },
+        "install_script": {
+          "detail": "no install script",
+          "state": "assessed_clean",
+          "value": false
+        },
+        "provenance": {
+          "detail": "no publish provenance",
+          "state": "assessed_clean",
+          "value": false
+        },
+        "publisher_concentration": {
+          "detail": "single human publisher (types) of 1 listed",
+          "state": "assessed_flagged",
+          "value": [
+            "types"
+          ]
+        },
+        "security_policy": {
+          "detail": "publishes a security policy",
+          "state": "assessed_clean",
+          "value": true
+        },
+        "staleness": {
+          "detail": "pushed 1 days ago",
+          "state": "assessed_clean",
+          "value": "2026-11-20T23:48:45Z"
+        },
+        "token_permissions": {
+          "detail": "the Scorecard API did not answer",
+          "state": "unassessable",
+          "value": null
+        }
+      },
+      "version": "20.19.43",
+      "version_source": "lockfile"
+    },
+    {
+      "dev": true,
+      "ecosystem": "npm",
+      "exists": true,
+      "flagged": [
+        "publisher_concentration"
+      ],
+      "name": "@types/react",
+      "non_registry_reason": null,
+      "repo": "github.com/DefinitelyTyped/DefinitelyTyped",
+      "signals": {
+        "advisories": {
+          "detail": "no advisories recorded",
+          "state": "assessed_clean",
+          "value": []
+        },
+        "archived": {
+          "detail": "repository is active",
+          "state": "assessed_clean",
+          "value": false
+        },
+        "binary_artifacts": {
+          "detail": "the Scorecard API did not answer",
+          "state": "unassessable",
+          "value": null
+        },
+        "code_review": {
+          "detail": "the Scorecard API did not answer",
+          "state": "unassessable",
+          "value": null
+        },
+        "dangerous_workflow": {
+          "detail": "the Scorecard API did not answer",
+          "state": "unassessable",
+          "value": null
+        },
+        "deprecated": {
+          "detail": "not deprecated",
+          "state": "assessed_clean",
+          "value": false
+        },
+        "downloads": {
+          "detail": "248,043,232 downloads/week (normal volume)",
+          "state": "assessed_clean",
+          "value": 248043232
+        },
+        "install_script": {
+          "detail": "no install script",
+          "state": "assessed_clean",
+          "value": false
+        },
+        "provenance": {
+          "detail": "no publish provenance",
+          "state": "assessed_clean",
+          "value": false
+        },
+        "publisher_concentration": {
+          "detail": "single human publisher (types) of 1 listed",
+          "state": "assessed_flagged",
+          "value": [
+            "types"
+          ]
+        },
+        "security_policy": {
+          "detail": "publishes a security policy",
+          "state": "assessed_clean",
+          "value": true
+        },
+        "staleness": {
+          "detail": "pushed 1 days ago",
+          "state": "assessed_clean",
+          "value": "2026-11-20T23:48:45Z"
+        },
+        "token_permissions": {
+          "detail": "the Scorecard API did not answer",
+          "state": "unassessable",
+          "value": null
+        }
+      },
+      "version": "19.3.0",
+      "version_source": "lockfile"
+    },
+    {
+      "dev": true,
+      "ecosystem": "npm",
+      "exists": true,
+      "flagged": [
+        "publisher_concentration"
+      ],
+      "name": "@types/react-dom",
+      "non_registry_reason": null,
+      "repo": "github.com/DefinitelyTyped/DefinitelyTyped",
+      "signals": {
+        "advisories": {
+          "detail": "no advisories recorded",
+          "state": "assessed_clean",
+          "value": []
+        },
+        "archived": {
+          "detail": "repository is active",
+          "state": "assessed_clean",
+          "value": false
+        },
+        "binary_artifacts": {
+          "detail": "the Scorecard API did not answer",
+          "state": "unassessable",
+          "value": null
+        },
+        "code_review": {
+          "detail": "the Scorecard API did not answer",
+          "state": "unassessable",
+          "value": null
+        },
+        "dangerous_workflow": {
+          "detail": "the Scorecard API did not answer",
+          "state": "unassessable",
+          "value": null
+        },
+        "deprecated": {
+          "detail": "not deprecated",
+          "state": "assessed_clean",
+          "value": false
+        },
+        "downloads": {
+          "detail": "210,611,836 downloads/week (normal volume)",
+          "state": "assessed_clean",
+          "value": 210611836
+        },
+        "install_script": {
+          "detail": "no install script",
+          "state": "assessed_clean",
+          "value": false
+        },
+        "provenance": {
+          "detail": "no publish provenance",
+          "state": "assessed_clean",
+          "value": false
+        },
+        "publisher_concentration": {
+          "detail": "single human publisher (types) of 1 listed",
+          "state": "assessed_flagged",
+          "value": [
+            "types"
+          ]
+        },
+        "security_policy": {
+          "detail": "publishes a security policy",
+          "state": "assessed_clean",
+          "value": true
+        },
+        "staleness": {
+          "detail": "pushed 1 days ago",
+          "state": "assessed_clean",
+          "value": "2026-11-20T23:48:45Z"
+        },
+        "token_permissions": {
+          "detail": "the Scorecard API did not answer",
+          "state": "unassessable",
+          "value": null
+        }
+      },
+      "version": "19.3.0",
+      "version_source": "lockfile"
+    },
+    {
+      "dev": true,
+      "ecosystem": "npm",
+      "exists": true,
+      "flagged": [],
+      "name": "eslint",
+      "non_registry_reason": null,
+      "repo": "github.com/eslint/eslint",
+      "signals": {
+        "advisories": {
+          "detail": "no advisories recorded",
+          "state": "assessed_clean",
+          "value": []
+        },
+        "archived": {
+          "detail": "repository is active",
+          "state": "assessed_clean",
+          "value": false
+        },
+        "binary_artifacts": {
+          "detail": "the Scorecard API did not answer",
+          "state": "unassessable",
+          "value": null
+        },
+        "code_review": {
+          "detail": "the Scorecard API did not answer",
+          "state": "unassessable",
+          "value": null
+        },
+        "dangerous_workflow": {
+          "detail": "the Scorecard API did not answer",
+          "state": "unassessable",
+          "value": null
+        },
+        "deprecated": {
+          "detail": "not deprecated",
+          "state": "assessed_clean",
+          "value": false
+        },
+        "downloads": {
+          "detail": "216,652,348 downloads/week (normal volume)",
+          "state": "assessed_clean",
+          "value": 216652348
+        },
+        "install_script": {
+          "detail": "no install script",
+          "state": "assessed_clean",
+          "value": false
+        },
+        "provenance": {
+          "detail": "no publish provenance",
+          "state": "assessed_clean",
+          "value": false
+        },
+        "publisher_concentration": {
+          "detail": "2 human publishers hold publish rights",
+          "state": "assessed_clean",
+          "value": [
+            "openjsfoundation",
+            "eslintbot"
+          ]
+        },
+        "security_policy": {
+          "detail": "publishes a security policy",
+          "state": "assessed_clean",
+          "value": true
+        },
+        "staleness": {
+          "detail": "pushed 0 days ago",
+          "state": "assessed_clean",
+          "value": "2026-11-21T19:23:03Z"
+        },
+        "token_permissions": {
+          "detail": "the Scorecard API did not answer",
+          "state": "unassessable",
+          "value": null
+        }
+      },
+      "version": "9.39.5",
+      "version_source": "lockfile"
+    },
+    {
+      "dev": true,
+      "ecosystem": "npm",
+      "exists": true,
+      "flagged": [],
+      "name": "eslint-config-next",
+      "non_registry_reason": null,
+      "repo": "github.com/vercel/next.js",
+      "signals": {
+        "advisories": {
+          "detail": "no advisories recorded",
+          "state": "assessed_clean",
+          "value": []
+        },
+        "archived": {
+          "detail": "repository is active",
+          "state": "assessed_clean",
+          "value": false
+        },
+        "binary_artifacts": {
+          "detail": "the Scorecard API did not answer",
+          "state": "unassessable",
+          "value": null
+        },
+        "code_review": {
+          "detail": "the Scorecard API did not answer",
+          "state": "unassessable",
+          "value": null
+        },
+        "dangerous_workflow": {
+          "detail": "the Scorecard API did not answer",
+          "state": "unassessable",
+          "value": null
+        },
+        "deprecated": {
+          "detail": "not deprecated",
+          "state": "assessed_clean",
+          "value": false
+        },
+        "downloads": {
+          "detail": "50,435,234 downloads/week (normal volume)",
+          "state": "assessed_clean",
+          "value": 50435234
+        },
+        "install_script": {
+          "detail": "no install script",
+          "state": "assessed_clean",
+          "value": false
+        },
+        "provenance": {
+          "detail": "publishes with provenance",
+          "state": "assessed_clean",
+          "value": true
+        },
+        "publisher_concentration": {
+          "detail": "publishes from CI with provenance, so the effective publisher set is whoever can merge to the release branch \u2014 not externally observable",
+          "state": "unassessable",
+          "value": [
+            "timneutkens",
+            "timer",
+            "vercel-release-bot"
+          ]
+        },
+        "security_policy": {
+          "detail": "publishes a security policy",
+          "state": "assessed_clean",
+          "value": true
+        },
+        "staleness": {
+          "detail": "pushed 0 days ago",
+          "state": "assessed_clean",
+          "value": "2026-11-22T03:41:50Z"
+        },
+        "token_permissions": {
+          "detail": "the Scorecard API did not answer",
+          "state": "unassessable",
+          "value": null
+        }
+      },
+      "version": "16.4.6",
+      "version_source": "lockfile"
+    },
+    {
+      "dev": false,
+      "ecosystem": "npm",
+      "exists": true,
+      "flagged": [],
+      "name": "next",
+      "non_registry_reason": null,
+      "repo": "github.com/vercel/next.js",
+      "signals": {
+        "advisories": {
+          "detail": "no advisories recorded",
+          "state": "assessed_clean",
+          "value": []
+        },
+        "archived": {
+          "detail": "repository is active",
+          "state": "assessed_clean",
+          "value": false
+        },
+        "binary_artifacts": {
+          "detail": "the Scorecard API did not answer",
+          "state": "unassessable",
+          "value": null
+        },
+        "code_review": {
+          "detail": "the Scorecard API did not answer",
+          "state": "unassessable",
+          "value": null
+        },
+        "dangerous_workflow": {
+          "detail": "the Scorecard API did not answer",
+          "state": "unassessable",
+          "value": null
+        },
+        "deprecated": {
+          "detail": "not deprecated",
+          "state": "assessed_clean",
+          "value": false
+        },
+        "downloads": {
+          "detail": "98,723,467 downloads/week (normal volume)",
+          "state": "assessed_clean",
+          "value": 98723467
+        },
+        "install_script": {
+          "detail": "no install script",
+          "state": "assessed_clean",
+          "value": false
+        },
+        "provenance": {
+          "detail": "publishes with provenance",
+          "state": "assessed_clean",
+          "value": true
+        },
+        "publisher_concentration": {
+          "detail": "publishes from CI with provenance, so the effective publisher set is whoever can merge to the release branch \u2014 not externally observable",
+          "state": "unassessable",
+          "value": [
+            "vercel-release-bot",
+            "matt.straka",
+            "matheuss",
+            "zeit-bot"
+          ]
+        },
+        "security_policy": {
+          "detail": "publishes a security policy",
+          "state": "assessed_clean",
+          "value": true
+        },
+        "staleness": {
+          "detail": "pushed 0 days ago",
+          "state": "assessed_clean",
+          "value": "2026-11-22T03:41:50Z"
+        },
+        "token_permissions": {
+          "detail": "the Scorecard API did not answer",
+          "state": "unassessable",
+          "value": null
+        }
+      },
+      "version": "16.4.6",
+      "version_source": "lockfile"
+    },
+    {
+      "dev": false,
+      "ecosystem": "npm",
+      "exists": true,
+      "flagged": [],
+      "name": "react",
+      "non_registry_reason": null,
+      "repo": "github.com/react/react",
+      "signals": {
+        "advisories": {
+          "detail": "no advisories recorded",
+          "state": "assessed_clean",
+          "value": []
+        },
+        "archived": {
+          "detail": "repository is active",
+          "state": "assessed_clean",
+          "value": false
+        },
+        "binary_artifacts": {
+          "detail": "the Scorecard API did not answer",
+          "state": "unassessable",
+          "value": null
+        },
+        "code_review": {
+          "detail": "the Scorecard API did not answer",
+          "state": "unassessable",
+          "value": null
+        },
+        "dangerous_workflow": {
+          "detail": "the Scorecard API did not answer",
+          "state": "unassessable",
+          "value": null
+        },
+        "deprecated": {
+          "detail": "not deprecated",
+          "state": "assessed_clean",
+          "value": false
+        },
+        "downloads": {
+          "detail": "275,461,240 downloads/week (normal volume)",
+          "state": "assessed_clean",
+          "value": 275461240
+        },
+        "install_script": {
+          "detail": "no install script",
+          "state": "assessed_clean",
+          "value": false
+        },
+        "provenance": {
+          "detail": "publishes with provenance",
+          "state": "assessed_clean",
+          "value": true
+        },
+        "publisher_concentration": {
+          "detail": "publishes from CI with provenance, so the effective publisher set is whoever can merge to the release branch \u2014 not externally observable",
+          "state": "unassessable",
+          "value": [
+            "fb",
+            "react-bot"
+          ]
+        },
+        "security_policy": {
+          "detail": "publishes a security policy",
+          "state": "assessed_clean",
+          "value": true
+        },
+        "staleness": {
+          "detail": "pushed 0 days ago",
+          "state": "assessed_clean",
+          "value": "2026-11-21T23:16:08Z"
+        },
+        "token_permissions": {
+          "detail": "the Scorecard API did not answer",
+          "state": "unassessable",
+          "value": null
+        }
+      },
+      "version": "19.3.0",
+      "version_source": "lockfile"
+    },
+    {
+      "dev": false,
+      "ecosystem": "npm",
+      "exists": true,
+      "flagged": [],
+      "name": "react-dom",
+      "non_registry_reason": null,
+      "repo": "github.com/react/react",
+      "signals": {
+        "advisories": {
+          "detail": "no advisories recorded",
+          "state": "assessed_clean",
+          "value": []
+        },
+        "archived": {
+          "detail": "repository is active",
+          "state": "assessed_clean",
+          "value": false
+        },
+        "binary_artifacts": {
+          "detail": "the Scorecard API did not answer",
+          "state": "unassessable",
+          "value": null
+        },
+        "code_review": {
+          "detail": "the Scorecard API did not answer",
+          "state": "unassessable",
+          "value": null
+        },
+        "dangerous_workflow": {
+          "detail": "the Scorecard API did not answer",
+          "state": "unassessable",
+          "value": null
+        },
+        "deprecated": {
+          "detail": "not deprecated",
+          "state": "assessed_clean",
+          "value": false
+        },
+        "downloads": {
+          "detail": "259,892,159 downloads/week (normal volume)",
+          "state": "assessed_clean",
+          "value": 259892159
+        },
+        "install_script": {
+          "detail": "no install script",
+          "state": "assessed_clean",
+          "value": false
+        },
+        "provenance": {
+          "detail": "publishes with provenance",
+          "state": "assessed_clean",
+          "value": true
+        },
+        "publisher_concentration": {
+          "detail": "publishes from CI with provenance, so the effective publisher set is whoever can merge to the release branch \u2014 not externally observable",
+          "state": "unassessable",
+          "value": [
+            "fb",
+            "react-bot"
+          ]
+        },
+        "security_policy": {
+          "detail": "publishes a security policy",
+          "state": "assessed_clean",
+          "value": true
+        },
+        "staleness": {
+          "detail": "pushed 0 days ago",
+          "state": "assessed_clean",
+          "value": "2026-11-21T23:16:08Z"
+        },
+        "token_permissions": {
+          "detail": "the Scorecard API did not answer",
+          "state": "unassessable",
+          "value": null
+        }
+      },
+      "version": "19.3.0",
+      "version_source": "lockfile"
+    },
+    {
+      "dev": true,
+      "ecosystem": "npm",
+      "exists": true,
+      "flagged": [],
+      "name": "tailwindcss",
+      "non_registry_reason": null,
+      "repo": "github.com/tailwindlabs/tailwindcss",
+      "signals": {
+        "advisories": {
+          "detail": "no advisories recorded",
+          "state": "assessed_clean",
+          "value": []
+        },
+        "archived": {
+          "detail": "repository is active",
+          "state": "assessed_clean",
+          "value": false
+        },
+        "binary_artifacts": {
+          "detail": "the Scorecard API did not answer",
+          "state": "unassessable",
+          "value": null
+        },
+        "code_review": {
+          "detail": "the Scorecard API did not answer",
+          "state": "unassessable",
+          "value": null
+        },
+        "dangerous_workflow": {
+          "detail": "the Scorecard API did not answer",
+          "state": "unassessable",
+          "value": null
+        },
+        "deprecated": {
+          "detail": "not deprecated",
+          "state": "assessed_clean",
+          "value": false
+        },
+        "downloads": {
+          "detail": "190,699,828 downloads/week (normal volume)",
+          "state": "assessed_clean",
+          "value": 190699828
+        },
+        "install_script": {
+          "detail": "no install script",
+          "state": "assessed_clean",
+          "value": false
+        },
+        "provenance": {
+          "detail": "publishes with provenance",
+          "state": "assessed_clean",
+          "value": true
+        },
+        "publisher_concentration": {
+          "detail": "publishes from CI with provenance, so the effective publisher set is whoever can merge to the release branch \u2014 not externally observable",
+          "state": "unassessable",
+          "value": [
+            "malfaitrobin",
+            "adamwathan",
+            "reinink"
+          ]
+        },
+        "security_policy": {
+          "detail": "no security policy found",
+          "state": "assessed_clean",
+          "value": false
+        },
+        "staleness": {
+          "detail": "pushed 1 days ago",
+          "state": "assessed_clean",
+          "value": "2026-11-20T18:53:02Z"
+        },
+        "token_permissions": {
+          "detail": "the Scorecard API did not answer",
+          "state": "unassessable",
+          "value": null
+        }
+      },
+      "version": "4.3.3",
+      "version_source": "lockfile"
+    },
+    {
+      "dev": true,
+      "ecosystem": "npm",
+      "exists": true,
+      "flagged": [],
+      "name": "typescript",
+      "non_registry_reason": null,
+      "repo": "github.com/microsoft/TypeScript",
+      "signals": {
+        "advisories": {
+          "detail": "no advisories recorded",
+          "state": "assessed_clean",
+          "value": []
+        },
+        "archived": {
+          "detail": "repository is active",
+          "state": "assessed_clean",
+          "value": false
+        },
+        "binary_artifacts": {
+          "detail": "the Scorecard API did not answer",
+          "state": "unassessable",
+          "value": null
+        },
+        "code_review": {
+          "detail": "the Scorecard API did not answer",
+          "state": "unassessable",
+          "value": null
+        },
+        "dangerous_workflow": {
+          "detail": "the Scorecard API did not answer",
+          "state": "unassessable",
+          "value": null
+        },
+        "deprecated": {
+          "detail": "not deprecated",
+          "state": "assessed_clean",
+          "value": false
+        },
+        "downloads": {
+          "detail": "450,660,908 downloads/week (normal volume)",
+          "state": "assessed_clean",
+          "value": 450660908
+        },
+        "install_script": {
+          "detail": "no install script",
+          "state": "assessed_clean",
+          "value": false
+        },
+        "provenance": {
+          "detail": "no publish provenance",
+          "state": "assessed_clean",
+          "value": false
+        },
+        "publisher_concentration": {
+          "detail": "6 human publishers hold publish rights",
+          "state": "assessed_clean",
+          "value": [
+            "microsoft1es",
+            "typescript-bot",
+            "weswigham",
+            "andrewbranch",
+            "typescript-deploys",
+            "microsoft-oss-releases",
+            "jakebailey"
+          ]
+        },
+        "security_policy": {
+          "detail": "publishes a security policy",
+          "state": "assessed_clean",
+          "value": true
+        },
+        "staleness": {
+          "detail": "pushed 0 days ago",
+          "state": "assessed_clean",
+          "value": "2026-11-22T02:56:30Z"
+        },
+        "token_permissions": {
+          "detail": "the Scorecard API did not answer",
+          "state": "unassessable",
+          "value": null
+        }
+      },
+      "version": "5.9.3",
+      "version_source": "lockfile"
+    }
+  ],
+  "ecosystems": {
+    "npm": 11
+  },
+  "notes": [
+    "cache directory ownership was not verified: os.getuid is POSIX-only, so a cache at C:\\Users\\Douglas\\AppData\\Local\\Temp\\supply-chain-risk-auditor-cache owned by another user would not be detected on this platform. Keep the cache under your own user profile, or pass --cache with a private path.",
+    "gh is not authenticated. GitHub allows 60 requests/hour unauthenticated against 5000 authenticated, so repository signals may be unassessable.",
+    "Repository-level criteria (archived, maintenance activity, security policy, and the Scorecard checks) describe the source repository rather than the package. 11 dependencies resolve to 6 distinct repositories, so one repository can appear as several findings. Shared: github.com/DefinitelyTyped/DefinitelyTyped, github.com/react/react, github.com/tailwindlabs/tailwindcss, github.com/vercel/next.js",
+    "Optional tooling detected: npm. Not installed, so not used: bundler-audit, cargo-audit, osv-scanner, pip-audit.",
+    "Every criterion except advisories applies to direct dependencies only. The 416 registry-verified packages resolved by package-lock.json were checked for known advisories at their locked versions, and for nothing else.",
+    "HTTP sources: 35 fetched, 28 served from cache (oldest 0.0h old), 0 refetched as stale, 0 unavailable offline, 11 errors."
+  ],
+  "scan": {
+    "commit": "7a62961913cc",
+    "manifests": [
+      "package.json",
+      "package-lock.json"
+    ],
+    "path": ".",
+    "scanned_at": "2026-11-22T05:31:58+00:00",
+    "subject": "mulher-de-aco-site"
+  },
+  "target": ".",
+  "transitive": {
+    "checked": 416,
+    "examined": true,
+    "excluded_direct": 11,
+    "flagged": [],
+    "lockfile_entries": 427,
+    "reason": null,
+    "sources": [
+      "package-lock.json"
+    ],
+    "total": 416,
+    "unverifiable": []
+  }
+}

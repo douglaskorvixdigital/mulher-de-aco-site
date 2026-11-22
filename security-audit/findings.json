@@ -1,0 +1,228 @@
+{
+  "schema_version": "1.0",
+  "project": "mulher-de-aco-site",
+  "commit": "7a62961913cc30c531c0ffc334981cb6553df3f3",
+  "scanned_at": "2026-11-22T05:31:58Z",
+  "scope": {
+    "manifests": ["package.json", "package-lock.json"],
+    "lockfile_version": 3,
+    "direct_dependencies": 11,
+    "direct_production": 3,
+    "direct_development": 8,
+    "lockfile_entries": 432,
+    "unique_package_names": 414,
+    "installed_packages_signature_checked": 358
+  },
+  "tools": [
+    {"name": "trailofbits/skills supply-chain-risk-auditor (collect.py + render.py)", "version": "0.1.0 (scripts pyproject)", "raw_output": "security-audit/raw/trailofbits-findings.json"},
+    {"name": "npm audit", "version": "npm 11.20.0", "raw_output": "security-audit/raw/npm-audit.json"},
+    {"name": "npm audit signatures", "version": "npm 11.20.0", "raw_output": "security-audit/raw/npm-audit-signatures.txt"},
+    {"name": "npm outdated / npm view / npm ls", "version": "npm 11.20.0", "raw_output": null},
+    {"name": "Node.js lockfile and node_modules inspection scripts", "version": "node 26.13.1", "raw_output": null},
+    {"name": "uv", "version": "0.13.9", "raw_output": null},
+    {"name": "Python", "version": "3.13.17", "raw_output": null}
+  ],
+  "summary": {
+    "CRITICAL": 0,
+    "HIGH": 0,
+    "MEDIUM": 0,
+    "LOW": 3,
+    "INFO": 8,
+    "known_cves_affecting_locked_versions": 0
+  },
+  "findings": [
+    {
+      "id": "SCA-001",
+      "title": "Direct dev dependency pinned to a version the registry marks as deprecated",
+      "package": "eslint",
+      "version": "9.39.5",
+      "severity": "LOW",
+      "cve": null,
+      "category": "deprecated-version",
+      "evidence": [
+        "package-lock.json: packages[\"node_modules/eslint\"].deprecated = \"This version is no longer supported. Please see https://eslint.org/version-support for other options.\"",
+        "npm view eslint@9.39.5 deprecated returned the same message on 2026-11-22",
+        "npm view eslint dist-tags: maintenance = 9.39.5, latest = 10.15.0",
+        "Trail of Bits collector recorded signals.deprecated = assessed_clean for eslint; that criterion evaluates package-level deprecation and did not register the version-level message. The discrepancy is reported here from registry data."
+      ],
+      "impact": "Build-time only. No known advisory affects 9.39.5 today; future security fixes for the 9.x line are not guaranteed, so a later advisory may have no patch on this major.",
+      "dependency_path": ["mulher-de-aco-site", "eslint@9.39.5 (devDependency)"],
+      "recommendation": "Plan a move to eslint 10.x once eslint-config-next declares support for it. The move is a major-version change and requires a lint configuration check; no runtime code is affected."
+    },
+    {
+      "id": "SCA-002",
+      "title": "Type-definition packages published by a single human account",
+      "package": "@types/node, @types/react, @types/react-dom",
+      "version": "20.19.43, 19.3.0, 19.3.0",
+      "severity": "LOW",
+      "cve": null,
+      "category": "publisher-concentration",
+      "evidence": [
+        "Trail of Bits collector: 'single human publisher (types) of 1 listed' for all three packages (raw/trailofbits-report.md, Findings > Build-time only)",
+        "Collector: no publish provenance for the three packages",
+        "npm audit signatures: registry signatures verified for all installed packages, including these"
+      ],
+      "impact": "Build-time only. A compromise of the single publishing account would reach developer machines and CI on the next unpinned install. Type packages ship no runtime code into the built site.",
+      "dependency_path": ["mulher-de-aco-site", "@types/node@20.19.43 | @types/react@19.3.0 | @types/react-dom@19.3.0 (devDependencies)"],
+      "recommendation": "Keep package-lock.json committed and install with `npm ci` so versions change only through reviewed lockfile diffs. No replacement is needed; DefinitelyTyped is the standard source for these types."
+    },
+    {
+      "id": "SCA-003",
+      "title": "Third-party design tooling executes a downloaded binary automatically on agent events",
+      "package": "impeccable (Claude Code skill + engine)",
+      "version": "engine 0.1.27",
+      "severity": "LOW",
+      "cve": null,
+      "category": "auto-execution / developer tooling",
+      "evidence": [
+        ".claude/settings.local.json registers SessionStart, PostToolUse (Edit|Write) and Stop hooks that run .claude/skills/impeccable/scripts/impeccable hook",
+        "Engine binary installed at %USERPROFILE%\\.impeccable\\bin\\0.1.27\\impeccable.exe with a .verified marker",
+        "impeccable is absent from skills-lock.json (installed by its own installer, not the skills CLI), so its version is not recorded in the repository"
+      ],
+      "impact": "Outside the npm dependency tree and outside the shipped site. A compromised update of the tool would run with the developer's permissions on every edit in this project.",
+      "dependency_path": ["developer workstation", ".claude/settings.local.json hooks", "impeccable.exe 0.1.27"],
+      "recommendation": "Keep settings.local.json out of version control, update the tool only deliberately (`npx impeccable check` before `update`), and disable the hooks with `/impeccable hooks off` if automatic execution is not wanted."
+    },
+    {
+      "id": "SCA-004",
+      "title": "No known vulnerabilities in direct or transitive dependencies",
+      "package": "all",
+      "version": "as locked",
+      "severity": "INFO",
+      "cve": null,
+      "category": "advisories",
+      "evidence": [
+        "Trail of Bits collector (OSV): 0 advisories for 11/11 direct dependencies at lockfile versions; 0 advisories for 416 registry-verified transitive packages",
+        "npm audit: vulnerabilities info 0, low 0, moderate 0, high 0, critical 0 across 432 dependencies (prod 17, dev 378, optional 82)"
+      ],
+      "impact": "None at the time of the scan. The result describes advisories published as of 2026-11-22.",
+      "dependency_path": ["mulher-de-aco-site", "*"],
+      "recommendation": "Re-run the audit before each release and enable automated dependency alerts on the GitHub repository."
+    },
+    {
+      "id": "SCA-005",
+      "title": "Lockfile integrity: every entry resolves to the npm registry with sha512 hashes",
+      "package": "all",
+      "version": "as locked",
+      "severity": "INFO",
+      "cve": null,
+      "category": "integrity",
+      "evidence": [
+        "package-lock.json lockfileVersion 3, 432 entries: 0 non-registry `resolved` URLs, 0 entries without `integrity`, 0 sha1 hashes",
+        "npm audit signatures: 358 packages have verified registry signatures; 88 packages have verified attestations",
+        "The remaining 74 lockfile entries are optional platform binaries for other operating systems (e.g. @next/swc-linux-*, @img/sharp-darwin-*) that are not installed on this Windows host and therefore were not signature-checked locally",
+        "No .npmrc in the project: the default registry is used"
+      ],
+      "impact": "Tampering with a tarball after publication would fail the integrity check on install.",
+      "dependency_path": ["mulher-de-aco-site", "*"],
+      "recommendation": "Run `npm audit signatures` in CI on Linux so the platform packages installed there are also verified."
+    },
+    {
+      "id": "SCA-006",
+      "title": "No install-time script execution in the tree",
+      "package": "all",
+      "version": "as locked",
+      "severity": "INFO",
+      "cve": null,
+      "category": "install-scripts",
+      "evidence": [
+        "package-lock.json: 0 entries with hasInstallScript",
+        "Trail of Bits collector: install-time script execution assessed 11/11, flagged 0",
+        "node_modules scan: 0 packages declare preinstall, install or postinstall; 21 installed package copies declare only `prepare` (e.g. acorn, minimatch, lightningcss, keyv), which npm does not run for registry tarballs"
+      ],
+      "impact": "`npm install` / `npm ci` does not execute package code at install time for the current tree.",
+      "dependency_path": ["mulher-de-aco-site", "*"],
+      "recommendation": "`npm ci --ignore-scripts` is viable for this project and adds a guard against a future dependency that introduces an install script; `next build` does not rely on install scripts."
+    },
+    {
+      "id": "SCA-007",
+      "title": "No typosquatting candidates found in the resolved package names",
+      "package": "all",
+      "version": "as locked",
+      "severity": "INFO",
+      "cve": null,
+      "category": "typosquatting",
+      "evidence": [
+        "Manual review of the 414 unique package names in package-lock.json: names and scopes match the expected dependency graphs of next, react, tailwindcss, eslint, typescript-eslint and sharp (@next, @img, @tailwindcss, @unrs, @emnapi, @eslint, @typescript-eslint, @nolyfill, @humanfs, @humanwhocodes)",
+        "Direct dependency names are spelled exactly as the upstream projects publish them; weekly downloads range from 3,058,665 (@tailwindcss/turbopack) to 668,203,298 (@types/node)"
+      ],
+      "impact": "None identified. This check is judgment, not an automated measurement.",
+      "dependency_path": ["mulher-de-aco-site", "*"],
+      "recommendation": "Review new package names in lockfile diffs before merging."
+    },
+    {
+      "id": "SCA-008",
+      "title": "Publish provenance and security policy absent for some direct dependencies",
+      "package": "@types/node, @types/react, @types/react-dom, eslint, typescript; tailwindcss, @tailwindcss/turbopack",
+      "version": "as locked",
+      "severity": "INFO",
+      "cve": null,
+      "category": "provenance / security-policy",
+      "evidence": [
+        "Trail of Bits collector: 6 of 11 publish with build provenance; without: @types/node, @types/react, @types/react-dom, eslint, typescript",
+        "Trail of Bits collector: 9 of 11 publish a security policy; without: @tailwindcss/turbopack, tailwindcss"
+      ],
+      "impact": "Without provenance, a published tarball cannot be tied to a specific source commit and CI run. Informational; not a vulnerability.",
+      "dependency_path": ["mulher-de-aco-site", "direct dependencies listed"],
+      "recommendation": "No action required. Upstream remediation only."
+    },
+    {
+      "id": "SCA-009",
+      "title": "Patch and major updates available; no advisory tied to the gap",
+      "package": "react, react-dom, tailwindcss, @tailwindcss/turbopack, typescript, @types/node, eslint",
+      "version": "19.3.0, 19.3.0, 4.3.3, 4.3.3, 5.9.3, 20.19.43, 9.39.5",
+      "severity": "INFO",
+      "cve": null,
+      "category": "outdated",
+      "evidence": [
+        "npm outdated: react/react-dom 19.3.0 -> 19.3.1 (patch); tailwindcss and @tailwindcss/turbopack 4.3.3 -> 4.3.5 (patch); typescript 5.9.3 -> 7.0.2 (major); @types/node 20.19.43 -> 26.6.6 (major); eslint 9.39.5 -> 10.15.0 (major)",
+        "Local runtime is Node v26.13.1 while @types/node is pinned to the ^20 range"
+      ],
+      "impact": "No security impact measured. @types/node 20 against a Node 26 runtime can hide API differences at type-check time.",
+      "dependency_path": ["mulher-de-aco-site", "direct dependencies listed"],
+      "recommendation": "Apply the react and tailwindcss patch releases in a routine update; align @types/node with the Node major used in production. No change was made during this audit."
+    },
+    {
+      "id": "SCA-010",
+      "title": "Next.js production dependency footprint is small",
+      "package": "next",
+      "version": "16.4.6",
+      "severity": "INFO",
+      "cve": null,
+      "category": "dependency-analysis",
+      "evidence": [
+        "npm audit metadata: 17 production dependencies out of 432 total",
+        "Non-optional production packages: next, react, react-dom, scheduler, @next/env, @swc/helpers, tslib, styled-jsx, client-only, postcss, nanoid, picocolors, source-map-js, caniuse-lite, baseline-browser-mapping, detect-libc",
+        "next 16.4.6 published 2026-11-09 with a registry signature; collector: no advisories, repository active, publishes from CI with provenance"
+      ],
+      "impact": "The code shipped to site visitors comes from a short, well-maintained list; most risk surface sits in build tooling.",
+      "dependency_path": ["mulher-de-aco-site", "next@16.4.6", "..."],
+      "recommendation": "No action required."
+    },
+    {
+      "id": "SCA-011",
+      "title": "Repository-hygiene criteria not assessable in this run",
+      "package": "all direct dependencies",
+      "version": "as locked",
+      "severity": "INFO",
+      "cve": null,
+      "category": "limitation",
+      "evidence": [
+        "Trail of Bits collector coverage: Dangerous CI workflow, CI token permissions, Checked-in binaries and Changes reviewed by a second person assessed 0/11 — 'the Scorecard API did not answer'",
+        "Publisher concentration assessed 5/11; 6 publish from CI with provenance, so the effective publisher set is not externally observable",
+        "gh was not authenticated (60 requests/hour limit); HTTP sources: 35 fetched, 11 errors"
+      ],
+      "impact": "The absence of findings in these criteria is not a clean verdict; it is unmeasured.",
+      "dependency_path": ["mulher-de-aco-site", "direct dependencies"],
+      "recommendation": "Run `gh auth login` and repeat the collector to fill the OpenSSF Scorecard criteria."
+    }
+  ],
+  "limitations": [
+    "OpenSSF Scorecard criteria returned no data for any dependency (API did not answer).",
+    "gh was unauthenticated; GitHub repository signals were rate-limited.",
+    "Criteria other than advisories apply to the 11 direct dependencies only; transitive packages were checked for advisories, integrity, install scripts and names.",
+    "74 optional platform packages for other operating systems were not installed, so their registry signatures were not verified locally.",
+    "Dependency source code was not read or executed; the audit uses registry, advisory and repository metadata.",
+    "Typosquatting assessment is manual judgment over the resolved name list."
+  ]
+}

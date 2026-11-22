@@ -1,0 +1,21 @@
+---
+// The Magazine — items fetched SERVER-SIDE (SEO) from the Wix CMS collection "Editions".
+import SiteLayout from "../layouts/SiteLayout.astro";
+import CollectionView from "../components/cms/CollectionView";
+import { queryItems } from "../wix/cms/items";
+import type { CmsPage } from "../wix/cms/types";
+const SORT = [{ field: "publishDate", direction: "desc" as const }];
+const FIELDS = { title: "issueLabel", image: "cover", date: "publishDate", kicker: "edition", summary: "slogan" };
+let page: CmsPage = { items: [], hasNext: false, total: null };
+try {
+  page = await queryItems("Editions", { sort: SORT, limit: 12 });
+} catch {
+  // Guarded: the island renders its own empty/error state.
+}
+---
+<SiteLayout title="A quarterly international magazine" description="Read every edition of A Mulher de Aço / The Woman of Steel, the magazine about immigrant women who rebuilt their lives across borders">
+  <p class="eyebrow">The Magazine</p>
+  <h1 class="mb-3 font-serif text-3xl font-semibold">A quarterly international magazine</h1>
+  <p class="mb-10 max-w-2xl text-muted-foreground">Read every edition of A Mulher de Aço / The Woman of Steel, the magazine about immigrant women who rebuilt their lives across borders</p>
+  <CollectionView client:load collectionId="Editions" basePath="/magazine" fields={FIELDS} emptyText="No editions have been published yet." sort={SORT} limit={12} initialItems={page.items} initialHasNext={page.hasNext} />
+</SiteLayout>

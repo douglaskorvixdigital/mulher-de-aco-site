@@ -156,6 +156,30 @@
       "skillPath": "plugins/supply-chain-risk-auditor/skills/supply-chain-risk-auditor/SKILL.md",
       "computedHash": "8a15fe1e5cb75e02781bcf4d823a3ea32095c2e16c964c49182312f666aff866"
     },
+    "wix-docs": {
+      "source": "wix/skills",
+      "commit": "4fcbda4d5697650ec110198942a216e658f6a54b",
+      "sourceType": "github",
+      "skillPath": "skills/wix-docs/SKILL.md",
+      "computedHash": "a1c9df0d598897668a70057d7a682263f23f728c488eaf51d7741d8cc9b913c4",
+      "installMode": "copy"
+    },
+    "wix-headless-kit": {
+      "source": "wix/skills",
+      "commit": "4fcbda4d5697650ec110198942a216e658f6a54b",
+      "sourceType": "github",
+      "skillPath": "skills/wix-headless-kit/SKILL.md",
+      "computedHash": "d25afeb328b00c91885f42c190c9f89b98a7963d1293620e740361ab5fbf4bd8",
+      "installMode": "copy"
+    },
+    "wix-manage": {
+      "source": "wix/skills",
+      "commit": "4fcbda4d5697650ec110198942a216e658f6a54b",
+      "sourceType": "github",
+      "skillPath": "skills/wix-manage/SKILL.md",
+      "computedHash": "a7d935128850d804d45261b65ccc996212d6c1723dd5685e54b2819b875f1209",
+      "installMode": "copy"
+    },
     "write-swift": {
       "source": "emilkowalski/skills",
       "commit": "64eb3deb9a5fbfa041faf783e0bc3fd635872e9c",

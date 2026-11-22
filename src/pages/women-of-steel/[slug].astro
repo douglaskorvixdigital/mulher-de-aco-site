@@ -1,0 +1,29 @@
+---
+// One item of the "WomenOfSteel" CMS collection. Plain title/description SEO (CMS has no owner-editable type).
+import SiteLayout from "../../layouts/SiteLayout.astro";
+import { getItemBy } from "../../wix/cms/items";
+import { formatDate } from "../../wix/cms/items-core";
+import { imgAttrs, imgRatio } from "../../wix/media";
+import type { CmsItem } from "../../wix/cms/types";
+let item: CmsItem | null = null;
+try {
+  item = await getItemBy("WomenOfSteel", "slug", Astro.params.slug!);
+} catch {
+  // Guarded: an unhandled SSR throw truncates the response mid-stream.
+}
+if (!item) return new Response(null, { status: 404 });
+const title = String(item.name ?? "");
+const image = imgAttrs(item.photo as string, "(min-width: 1024px) 60vw, 100vw", imgRatio(item.photo as string) ?? 1.5);
+---
+<SiteLayout title={title} description={String(item.summary ?? title)}>
+  <article class="flex max-w-3xl flex-col gap-5">
+    <a href="/women-of-steel" class="text-sm text-muted-foreground">← All Women of Steel</a>
+    {item.country && <p class="eyebrow">{String(item.country)}</p>}
+    <h1 class="font-serif text-4xl font-semibold">{title}</h1>
+    {item.publishDate && <p class="text-muted-foreground">{formatDate(item.publishDate)}</p>}
+    {"src" in image
+      ? <img {...image} loading="eager" alt={title} class="w-full rounded-lg" />
+      : null}
+    {item.story && <div class="max-w-prose" set:html={String(item.story)} />}
+  </article>
+</SiteLayout>

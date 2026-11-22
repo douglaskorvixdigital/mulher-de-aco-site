@@ -1,0 +1,41 @@
+---
+// One magazine edition. CMS collections have no owner-editable SEO type: plain title/description.
+import SiteLayout from "../../layouts/SiteLayout.astro";
+import { getItemBy } from "../../wix/cms/items";
+import { formatDate } from "../../wix/cms/items-core";
+import { imgAttrs, imgRatio } from "../../wix/media";
+import type { CmsItem } from "../../wix/cms/types";
+let item: CmsItem | null = null;
+try {
+  item = await getItemBy("Editions", "slug", Astro.params.slug!);
+} catch {
+  // Guarded: an unhandled SSR throw truncates the response mid-stream.
+}
+if (!item) return new Response(null, { status: 404 });
+const title = String(item.title ?? "");
+const cover = imgAttrs(item.cover as string, "(min-width: 1024px) 40vw, 100vw", imgRatio(item.cover as string) ?? 0.75);
+---
+<SiteLayout title={`${item.issueLabel ?? title}`} description={`${title} — ${item.issueLabel ?? ""}`}>
+  <article class="grid gap-10 lg:grid-cols-[2fr_3fr]">
+    {"src" in cover
+      ? <img {...cover} loading="eager" alt={`Cover of ${title}, ${item.issueLabel ?? ""}`} class="w-full rounded-lg" />
+      : <div class="aspect-[3/4] w-full rounded-lg bg-secondary" aria-hidden="true"></div>}
+    <div class="flex flex-col gap-4">
+      {item.edition && <p class="eyebrow">{String(item.edition)}</p>}
+      <h1 class="font-serif text-4xl font-semibold">{title}</h1>
+      {item.issueLabel && <p class="text-xl">{String(item.issueLabel)}</p>}
+      {item.slogan && <p class="text-muted-foreground">{String(item.slogan)}</p>}
+      <dl class="grid grid-cols-2 gap-4 text-sm sm:grid-cols-3">
+        {item.publishDate && <div><dt class="text-muted-foreground">Published</dt><dd>{formatDate(item.publishDate, "en-US", { month: "long", year: "numeric" })}</dd></div>}
+        {item.pages && <div><dt class="text-muted-foreground">Pages</dt><dd>{String(item.pages)}</dd></div>}
+        {item.priceUsd && <div><dt class="text-muted-foreground">Price</dt><dd>US$ {String(item.priceUsd)}</dd></div>}
+      </dl>
+      {item.summary && <div class="max-w-prose" set:html={String(item.summary)} />}
+      <div class="mt-4 flex flex-wrap gap-3">
+        {item.flipbookUrl && <a href={String(item.flipbookUrl)} target="_blank" rel="noopener" class="rounded-control bg-primary px-6 py-3 font-medium text-primary-foreground no-underline">Read the edition<span class="sr-only"> (opens in a new tab)</span></a>}
+        <a href="/shop" class="rounded-control border border-border px-6 py-3 font-medium text-foreground no-underline">Buy in the shop</a>
+      </div>
+      {item.credits && <p class="mt-6 text-sm text-muted-foreground">{String(item.credits)}</p>}
+    </div>
+  </article>
+</SiteLayout>

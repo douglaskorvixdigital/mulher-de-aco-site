@@ -1,0 +1,21 @@
+---
+// Events — items fetched SERVER-SIDE (SEO) from the Wix CMS collection "Events".
+import SiteLayout from "../layouts/SiteLayout.astro";
+import CollectionView from "../components/cms/CollectionView";
+import { queryItems } from "../wix/cms/items";
+import type { CmsPage } from "../wix/cms/types";
+const SORT = [{ field: "startDate", direction: "desc" as const }];
+const FIELDS = { title: "title", image: "image", date: "startDate", kicker: "location" };
+let page: CmsPage = { items: [], hasNext: false, total: null };
+try {
+  page = await queryItems("Events", { sort: SORT, limit: 12 });
+} catch {
+  // Guarded: the island renders its own empty/error state.
+}
+---
+<SiteLayout title="Events of the magazine" description="Launches, meetings and gatherings organized by A Mulher de Aço">
+  <p class="eyebrow">Events</p>
+  <h1 class="mb-3 font-serif text-3xl font-semibold">Events of the magazine</h1>
+  <p class="mb-10 max-w-2xl text-muted-foreground">Launches, meetings and gatherings organized by A Mulher de Aço</p>
+  <CollectionView client:load collectionId="Events" basePath="/events" fields={FIELDS} emptyText="No events are scheduled right now." sort={SORT} limit={12} initialItems={page.items} initialHasNext={page.hasNext} />
+</SiteLayout>

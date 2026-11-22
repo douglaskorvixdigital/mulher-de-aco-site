@@ -1,0 +1,107 @@
+---
+// The site chrome for every page. Structural version: the visual design (DESIGN.md) comes next.
+// Keep (kit contract):
+//   - the <slot name="seo-tags" /> in <head> (item pages' owner-editable SEO lands there)
+//   - the global.css import (Tailwind + the design tokens every shipped component reads)
+//   - one <CartButton> in the header and one <CartDrawer> per page (both client:only)
+//   - shop category links from the live tree (`/category/<slug>`)
+import CartButton from "../components/storefront/CartButton";
+import CartDrawer from "../components/storefront/CartDrawer";
+import { fetchCategories } from "../wix/storefront/catalog";
+import type { Category } from "../wix/storefront/types";
+import "../styles/global.css";
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+const { title, description } = Astro.props;
+
+const NAV = [
+  { href: "/magazine", label: "The Magazine" },
+  { href: "/blog", label: "Reporting" },
+  { href: "/women-of-steel", label: "Women of Steel" },
+  { href: "/about-the-founder", label: "About the Founder" },
+  { href: "/events", label: "Events" },
+  { href: "/shop", label: "Shop" },
+  { href: "/partnerships", label: "Partnerships & Advertising" },
+  { href: "/contact", label: "Contact" },
+];
+
+let shopCategories: Category[] = [];
+try {
+  shopCategories = (await fetchCategories()).filter((c) => c.parentId === null);
+} catch {
+  /* the shop link still reaches everything */
+}
+const path = Astro.url.pathname;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    {title && !Astro.slots.has("seo-tags") && <title>{title} · A Mulher de Aço</title>}
+    {description && <meta name="description" content={description} />}
+    <slot name="seo-tags" />
+  </head>
+  <body class="flex min-h-screen flex-col">
+    <a href="#main" class="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:bg-background focus:px-3 focus:py-2">Skip to content</a>
+    <header class="sticky top-0 z-40 border-b border-border bg-background/90 backdrop-blur">
+      <div class="flex h-16 items-center justify-between gap-6 px-6 lg:px-10">
+        <a href="/" class="shrink-0 font-serif text-lg font-semibold tracking-tight text-foreground no-underline">
+          A Mulher de Aço
+          <span class="sr-only"> / The Woman of Steel</span>
+        </a>
+        <nav aria-label="Main" class="hidden items-center gap-5 text-sm xl:flex">
+          {NAV.map((item) => (
+            <a
+              href={item.href}
+              aria-current={path === item.href || path.startsWith(item.href + "/") ? "page" : undefined}
+              class="text-foreground no-underline transition-colors hover:text-muted-foreground aria-[current=page]:text-accent"
+            >{item.label}</a>
+          ))}
+        </nav>
+        <div class="flex items-center gap-4">
+          <CartButton client:only="react" />
+          <details class="relative xl:hidden">
+            <summary class="cursor-pointer list-none text-sm font-medium">Menu</summary>
+            <nav aria-label="Main (mobile)" class="absolute right-0 top-10 flex w-64 flex-col gap-1 rounded-lg border border-border bg-background p-3 shadow-lg">
+              {NAV.map((item) => (
+                <a href={item.href} class="rounded-sm px-2 py-2 text-foreground no-underline hover:bg-secondary">{item.label}</a>
+              ))}
+            </nav>
+          </details>
+        </div>
+      </div>
+    </header>
+
+    <main id="main" class="flex-1 px-6 py-10 lg:px-10">
+      <slot />
+    </main>
+
+    <footer class="border-t border-border px-6 py-12 text-sm text-muted-foreground lg:px-10">
+      <div class="grid gap-8 md:grid-cols-3">
+        <div>
+          <p class="font-serif text-base font-semibold text-foreground">A Mulher de Aço / The Woman of Steel</p>
+          <p class="mt-1">Beyond Borders, Beyond Limits</p>
+        </div>
+        <nav aria-label="Footer" class="flex flex-col gap-2">
+          {NAV.map((item) => <a href={item.href} class="text-muted-foreground no-underline hover:text-foreground">{item.label}</a>)}
+          <a href="/share-your-story" class="text-muted-foreground no-underline hover:text-foreground">Share your story</a>
+          {shopCategories.map((c) => (
+            <a href={`/category/${c.slug}`} class="text-muted-foreground no-underline hover:text-foreground">Shop · {c.name}</a>
+          ))}
+        </nav>
+        <div class="flex flex-col gap-2">
+          <a href="mailto:editorial@amulherdeaco.com" class="text-muted-foreground no-underline hover:text-foreground">editorial@amulherdeaco.com</a>
+          <a href="tel:+12032975498" class="text-muted-foreground no-underline hover:text-foreground">+1 203-297-5498</a>
+        </div>
+      </div>
+      <p class="mt-10">© {new Date().getFullYear()} A Mulher de Aço</p>
+    </footer>
+    <CartDrawer client:only="react" />
+  </body>
+</html>

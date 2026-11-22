@@ -1,0 +1,85 @@
+---
+// Home — the magazine first, then reporting and the women's stories. Structural version: hero
+// design, imagery and motion come with DESIGN.md. Every section reads live from Wix.
+import SiteLayout from "../layouts/SiteLayout.astro";
+import { queryItems } from "../wix/cms/items";
+import { formatDate } from "../wix/cms/items-core";
+import { fetchPosts } from "../wix/blog/posts";
+import { imgAttrs } from "../wix/media";
+import type { CmsItem } from "../wix/cms/types";
+import type { PostSummary } from "../wix/blog/types";
+
+let edition: CmsItem | null = null;
+let profiles: CmsItem[] = [];
+let posts: PostSummary[] = [];
+try {
+  const [eds, wos, feed] = await Promise.all([
+    queryItems("Editions", { sort: [{ field: "publishDate", direction: "desc" }], limit: 1 }),
+    queryItems("WomenOfSteel", { sort: [{ field: "publishDate", direction: "desc" }], limit: 3 }),
+    fetchPosts({ limit: 3 }),
+  ]);
+  edition = eds.items[0] ?? null;
+  profiles = wos.items;
+  posts = feed.posts;
+} catch {
+  // Guarded: each section below has an honest empty state.
+}
+const editionHref = edition ? `/magazine/${String(edition.slug)}` : "/magazine";
+const cover = edition ? imgAttrs(edition.cover as string, "(min-width: 1024px) 40vw, 100vw", 0.75) : {};
+---
+<SiteLayout>
+  <section class="grid items-center gap-10 lg:grid-cols-[3fr_2fr]">
+    <div class="flex flex-col gap-5">
+      <p class="eyebrow">International magazine by and about immigrant women</p>
+      <h1 class="font-serif text-4xl font-semibold sm:text-5xl">A Mulher de Aço / The Woman of Steel</h1>
+      <p class="max-w-xl text-lg text-muted-foreground">Read the quarterly magazine that gives visibility to the stories of women who rebuilt their lives across borders</p>
+      {edition && <p class="text-sm">{String(edition.issueLabel ?? "")} · {String(edition.slogan ?? "")}</p>}
+      <div class="flex flex-wrap gap-3">
+        <a href={editionHref} class="rounded-control bg-primary px-6 py-3 font-medium text-primary-foreground no-underline">Read the latest edition</a>
+        <a href="/partnerships" class="rounded-control border border-border px-6 py-3 font-medium text-foreground no-underline">Advertise with us</a>
+      </div>
+    </div>
+    <a href={editionHref} aria-label="Latest edition" class="no-underline">
+      {"src" in cover
+        ? <img {...cover} loading="eager" alt={`Cover of ${String(edition?.issueLabel ?? "the latest edition")}`} class="w-full rounded-lg" />
+        : <div class="flex aspect-[3/4] w-full items-center justify-center rounded-lg bg-primary p-8 text-center font-serif text-2xl text-primary-foreground">{String(edition?.issueLabel ?? "The Woman of Steel")}</div>}
+    </a>
+  </section>
+
+  <section class="mt-24" aria-labelledby="home-reporting">
+    <div class="mb-8 flex items-baseline justify-between gap-4">
+      <h2 id="home-reporting" class="font-serif text-2xl font-semibold">Reporting</h2>
+      <a href="/blog" class="text-sm">All reporting</a>
+    </div>
+    {posts.length === 0
+      ? <p class="text-muted-foreground">No reporting has been published yet.</p>
+      : <ul class="grid gap-8 md:grid-cols-3">
+          {posts.map((p) => (
+            <li><a href={`/blog/${p.slug}`} class="flex flex-col gap-2 text-foreground no-underline">
+              <span class="font-serif text-lg font-semibold">{p.title}</span>
+              {p.excerpt && <span class="text-muted-foreground">{p.excerpt}</span>}
+            </a></li>
+          ))}
+        </ul>}
+  </section>
+
+  <section class="mt-24" aria-labelledby="home-wos">
+    <div class="mb-8 flex items-baseline justify-between gap-4">
+      <h2 id="home-wos" class="font-serif text-2xl font-semibold">Women of Steel</h2>
+      <a href="/women-of-steel" class="text-sm">All stories</a>
+    </div>
+    {profiles.length === 0
+      ? <p class="text-muted-foreground">No profiles have been published yet.</p>
+      : <ul class="grid gap-8 md:grid-cols-3">
+          {profiles.map((w) => (
+            <li><a href={`/women-of-steel/${String(w.slug)}`} class="flex flex-col gap-2 text-foreground no-underline">
+              {w.country && <span class="eyebrow">{String(w.country)}</span>}
+              <span class="font-serif text-lg font-semibold">{String(w.name ?? "")}</span>
+              {w.summary && <span class="text-muted-foreground">{String(w.summary)}</span>}
+              {w.publishDate && <span class="text-sm text-muted-foreground">{formatDate(w.publishDate)}</span>}
+            </a></li>
+          ))}
+        </ul>}
+    <a href="/share-your-story" class="mt-8 inline-block font-medium text-accent">Share your story</a>
+  </section>
+</SiteLayout>

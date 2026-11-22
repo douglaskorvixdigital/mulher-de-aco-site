@@ -1,0 +1,22 @@
+---
+// Women of Steel — items fetched SERVER-SIDE (SEO) from the Wix CMS collection "WomenOfSteel".
+import SiteLayout from "../layouts/SiteLayout.astro";
+import CollectionView from "../components/cms/CollectionView";
+import { queryItems } from "../wix/cms/items";
+import type { CmsPage } from "../wix/cms/types";
+const SORT = [{ field: "publishDate", direction: "desc" as const }];
+const FIELDS = { title: "name", image: "photo", kicker: "country", summary: "summary" };
+let page: CmsPage = { items: [], hasNext: false, total: null };
+try {
+  page = await queryItems("WomenOfSteel", { sort: SORT, limit: 12 });
+} catch {
+  // Guarded: the island renders its own empty/error state.
+}
+---
+<SiteLayout title="Stories of women who crossed borders" description="Profiles of immigrant women, published with their approval">
+  <p class="eyebrow">Women of Steel</p>
+  <h1 class="mb-3 font-serif text-3xl font-semibold">Stories of women who crossed borders</h1>
+  <p class="mb-4 max-w-2xl text-muted-foreground">Profiles of immigrant women, published with their approval</p>
+  <p class="mb-10"><a href="/share-your-story" class="font-medium text-accent">Share your story</a></p>
+  <CollectionView client:load collectionId="WomenOfSteel" basePath="/women-of-steel" fields={FIELDS} emptyText="No profiles have been published yet." sort={SORT} limit={12} initialItems={page.items} initialHasNext={page.hasNext} />
+</SiteLayout>

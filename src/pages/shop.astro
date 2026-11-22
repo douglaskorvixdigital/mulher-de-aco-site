@@ -1,0 +1,20 @@
+---
+// Shop — products and categories fetched SERVER-SIDE (SEO), filtered live on the client.
+import SiteLayout from "../layouts/SiteLayout.astro";
+import ShopView from "../components/storefront/ShopView";
+import { fetchProducts, fetchCategories } from "../wix/storefront/catalog";
+import type { Category, ProductSummary } from "../wix/storefront/types";
+
+let products: ProductSummary[] = [];
+let categories: Category[] = [];
+try {
+  [products, categories] = await Promise.all([fetchProducts({ limit: 24 }), fetchCategories()]);
+} catch {
+  // Guarded: the island renders its own empty/error state.
+}
+---
+<SiteLayout>
+  <p class="eyebrow">Shop</p>
+  <h1 class="mb-8 font-serif text-3xl font-semibold">Magazine editions and books</h1>
+  <ShopView client:load initialProducts={products} initialCategories={categories} />
+</SiteLayout>

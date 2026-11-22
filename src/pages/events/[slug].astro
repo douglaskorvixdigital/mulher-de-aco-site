@@ -1,0 +1,30 @@
+---
+// One item of the "Events" CMS collection. Plain title/description SEO (CMS has no owner-editable type).
+import SiteLayout from "../../layouts/SiteLayout.astro";
+import { getItemBy } from "../../wix/cms/items";
+import { formatDate } from "../../wix/cms/items-core";
+import { imgAttrs, imgRatio } from "../../wix/media";
+import type { CmsItem } from "../../wix/cms/types";
+let item: CmsItem | null = null;
+try {
+  item = await getItemBy("Events", "slug", Astro.params.slug!);
+} catch {
+  // Guarded: an unhandled SSR throw truncates the response mid-stream.
+}
+if (!item) return new Response(null, { status: 404 });
+const title = String(item.title ?? "");
+const image = imgAttrs(item.image as string, "(min-width: 1024px) 60vw, 100vw", imgRatio(item.image as string) ?? 1.5);
+---
+<SiteLayout title={title} description={String(item.summary ?? title)}>
+  <article class="flex max-w-3xl flex-col gap-5">
+    <a href="/events" class="text-sm text-muted-foreground">← All events</a>
+    {item.location && <p class="eyebrow">{String(item.location)}</p>}
+    <h1 class="font-serif text-4xl font-semibold">{title}</h1>
+    {item.startDate && <p class="text-muted-foreground">{formatDate(item.startDate)}</p>}
+    {"src" in image
+      ? <img {...image} loading="eager" alt={title} class="w-full rounded-lg" />
+      : null}
+    {item.description && <div class="max-w-prose" set:html={String(item.description)} />}
+    {item.registrationUrl && <a href={String(item.registrationUrl)} target="_blank" rel="noopener" class="self-start rounded-control bg-primary px-6 py-3 font-medium text-primary-foreground no-underline">Register<span class="sr-only"> (opens in a new tab)</span></a>}
+  </article>
+</SiteLayout>

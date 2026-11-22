@@ -1,0 +1,56 @@
+---
+// A shop category: a Wix item page with owner-editable SEO (kit skeleton, kept as shipped).
+import SiteLayout from "../../layouts/SiteLayout.astro";
+import ShopView from "../../components/storefront/ShopView";
+import { fetchCategoryBySlug, fetchProductsByCategory, fetchCategories } from "../../wix/storefront/catalog";
+import type { Category, ProductSummary } from "../../wix/storefront/types";
+import { WIX_APPS } from "@wix/essentials";
+import { SEO } from "@wix/seo/components";
+import { loadSEOTagsServiceConfig } from "@wix/seo/services";
+import { seoTags } from "@wix/seo";
+
+export const wixMetadata = {
+  appDefId: WIX_APPS.checkoutAndOrders.id,
+  pageIdentifier: WIX_APPS.checkoutAndOrders.categoryPageMetadata.pageIdentifier,
+  identifiers: { slug: WIX_APPS.checkoutAndOrders.categoryPageMetadata.identifiers.collection },
+};
+
+const slug = Astro.params.slug!;
+const forwardedUrl = Astro.request.headers.get("x-wix-forwarded-url");
+const pageUrl =
+  forwardedUrl && URL.canParse(forwardedUrl) && /^https?:$/.test(new URL(forwardedUrl).protocol)
+    ? forwardedUrl
+    : Astro.url.href;
+
+let category: Category | null = null;
+let products: ProductSummary[] = [];
+let categories: Category[] = [];
+let seoTagsServiceConfig = null;
+try {
+  category = await fetchCategoryBySlug(slug);
+  if (category) {
+    const itemType = category.parentId ? seoTags.ItemType.STORES_SUB_CATEGORY : seoTags.ItemType.STORES_CATEGORY;
+    [products, categories, seoTagsServiceConfig] = await Promise.all([
+      fetchProductsByCategory(category.id, { limit: 24 }),
+      fetchCategories(),
+      loadSEOTagsServiceConfig({ pageUrl, itemType, itemData: { slug } }),
+    ]);
+  }
+} catch {
+  // Guarded: an unhandled SSR throw truncates the response mid-stream.
+}
+
+if (!category) {
+  return new Response(null, { status: 404 });
+}
+---
+<SiteLayout title={category.name}>
+  <SEO.Tags seoTagsServiceConfig={seoTagsServiceConfig} slot="seo-tags" />
+  <nav aria-label="Breadcrumb" class="mb-4 text-sm text-muted-foreground">
+    <a href="/shop" class="text-muted-foreground">Shop</a>
+    {category.breadcrumbs.map((b) => <span> › <a href={`/category/${b.slug}`} class="text-muted-foreground">{b.name}</a></span>)}
+  </nav>
+  <h1 class="mb-2 font-serif text-3xl font-semibold">{category.name}</h1>
+  {category.description && <p class="mb-8 max-w-2xl text-muted-foreground">{category.description}</p>}
+  <ShopView client:load initialProducts={products} initialCategories={categories} initialCategoryId={category.id} />
+</SiteLayout>

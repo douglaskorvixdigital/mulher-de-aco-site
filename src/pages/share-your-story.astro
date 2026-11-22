@@ -1,0 +1,26 @@
+---
+// Share your story — the Wix form schema is fetched SERVER-SIDE so the first paint has the fields.
+import SiteLayout from "../layouts/SiteLayout.astro";
+import WixFormView from "../components/forms/WixFormView";
+import { getForm } from "../wix/forms/forms";
+import type { FormDto } from "../wix/forms/types";
+
+const FORM_ID = "6d9763ea-3500-4e0b-9613-4b27414b57b2";
+let form: FormDto | null = null;
+try {
+  form = await getForm(FORM_ID);
+} catch {
+  // Guarded: the island loads the schema itself and shows the real error if it fails again.
+}
+---
+<SiteLayout title="Tell us the story of a woman of steel" description="Your own story or the story of another immigrant woman. The editorial team reads every submission, and nothing is published without approval">
+  <div class="grid gap-12 lg:grid-cols-[2fr_3fr]">
+    <div>
+      <p class="eyebrow">Share your story</p>
+      <h1 class="mb-4 font-serif text-3xl font-semibold">Tell us the story of a woman of steel</h1>
+      <p class="max-w-md text-muted-foreground">Your own story or the story of another immigrant woman. The editorial team reads every submission, and nothing is published without approval</p>
+      
+    </div>
+    <WixFormView client:load formId={FORM_ID} initialForm={form ?? undefined} submitLabel="Submit story" />
+  </div>
+</SiteLayout>

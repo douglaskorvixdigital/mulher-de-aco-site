@@ -1,0 +1,42 @@
+---
+// Product page: a Wix item page with owner-editable SEO (kit skeleton, kept as shipped).
+import SiteLayout from "../../layouts/SiteLayout.astro";
+import ProductDetailView from "../../components/storefront/ProductDetailView";
+import { fetchProductBySlug } from "../../wix/storefront/catalog";
+import { WIX_APPS } from "@wix/essentials";
+import { SEO } from "@wix/seo/components";
+import { loadSEOTagsServiceConfig } from "@wix/seo/services";
+import { seoTags } from "@wix/seo";
+
+export const wixMetadata = {
+  appDefId: WIX_APPS.checkoutAndOrders.id,
+  pageIdentifier: WIX_APPS.checkoutAndOrders.productPageMetadata.pageIdentifier,
+  identifiers: { slug: WIX_APPS.checkoutAndOrders.productPageMetadata.identifiers.handle },
+};
+
+const slug = Astro.params.slug!;
+const forwardedUrl = Astro.request.headers.get("x-wix-forwarded-url");
+const pageUrl =
+  forwardedUrl && URL.canParse(forwardedUrl) && /^https?:$/.test(new URL(forwardedUrl).protocol)
+    ? forwardedUrl
+    : Astro.url.href;
+
+let product = null;
+let seoTagsServiceConfig = null;
+try {
+  [product, seoTagsServiceConfig] = await Promise.all([
+    fetchProductBySlug(slug),
+    loadSEOTagsServiceConfig({ pageUrl, itemType: seoTags.ItemType.STORES_PRODUCT, itemData: { slug } }),
+  ]);
+} catch {
+  // Guarded: an unhandled SSR throw truncates the response mid-stream.
+}
+
+if (!product) {
+  return new Response(null, { status: 404 });
+}
+---
+<SiteLayout title={product.name}>
+  <SEO.Tags seoTagsServiceConfig={seoTagsServiceConfig} slot="seo-tags" />
+  <ProductDetailView client:load initial={product} />
+</SiteLayout>

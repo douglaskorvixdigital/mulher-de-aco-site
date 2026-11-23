@@ -19,7 +19,7 @@ const image = imgAttrs(item.photo as string, "(min-width: 1024px) 60vw, 100vw", 
   <article class="flex max-w-3xl flex-col gap-5">
     <a href="/women-of-steel" class="text-sm text-muted-foreground">← Todas as Mulheres de Aço</a>
     {item.country && <p class="eyebrow">{String(item.country)}</p>}
-    <h1 class="display text-[clamp(36px,6vw,88px)] font-extrabold leading-[.9]">{title}</h1>
+    <h1 class="font-[family-name:var(--font-display)] text-[clamp(36px,5.4vw,84px)] font-medium leading-none tracking-[-.045em]">{title}</h1>
     {item.publishDate && <p class="text-muted-foreground">{formatDate(item.publishDate)}</p>}
     {"src" in image
       ? <img {...image} loading="eager" alt={title} class="w-full rounded-lg" />

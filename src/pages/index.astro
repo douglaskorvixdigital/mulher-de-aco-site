@@ -1,7 +1,9 @@
 ---
-// Home — "one becomes many". A single gold point (one woman's story) becomes a globe of points
-// and routes (the stories of many women); the edition opens from a horizon; the sections of the
-// magazine pass like a route; the Power of M chapter brings daylight. Content reads live from Wix.
+// Home — Luxury Editorial Cinematic. Navy ground, metallic gold as a finish, white for air.
+// The edition cover is the only photograph the project holds (612×807): it is framed at its
+// native height so it stays sharp, layered with a detail crop, never stretched full-bleed.
+// Motion: an opening sequence on load, reveals and image parallax on scroll (no pinning, no
+// scroll-jacking), and click-driven page transitions from the layout.
 import SiteLayout from "../layouts/SiteLayout.astro";
 import { queryItems } from "../wix/cms/items";
 import { fetchPosts } from "../wix/blog/posts";
@@ -22,113 +24,124 @@ try {
   // Guarded: each section has an honest fallback.
 }
 const editionHref = edition ? `/magazine/${String(edition.slug)}` : "/magazine";
-const coverSrc = edition?.cover ? String(edition.cover) : "/images/edicao-01-capa.webp";
+const cover = edition?.cover ? String(edition.cover) : "/images/edicao-01-capa.webp";
 const pages = edition?.pages ? Number(edition.pages) : null;
 const price = edition?.priceUsd ? Number(edition.priceUsd) : null;
 const flipbook = edition?.flipbookUrl ? String(edition.flipbookUrl) : null;
 
-// The editorial sections the founder listed (orientations of 20 Nov 2026).
-const EDITORIAS = ["Saúde", "Educação", "Cultura", "Direitos humanos", "Turismo", "Esporte", "Meio ambiente", "Economia", "Política", "Gastronomia"];
+// The founder's list of editorial sections (orientations of 20 Nov 2026).
+const EDITORIAS = ["Saúde", "Educação", "Cultura", "Turismo", "Esporte", "Direitos humanos", "Meio ambiente", "Política", "Economia", "Gastronomia"];
+// Lines printed on the cover of Edition 01.
+const COVER_LINES = ["Leadership without borders", "A strong woman, a brighter world", "From Brazil to the world", "Education, sports, culture, community"];
 ---
-<SiteLayout bleed description="Revista internacional feita por e sobre mulheres que reconstruíram a vida do outro lado da fronteira.">
+<SiteLayout bleed description="A Mulher de Aço, revista internacional feita por e sobre mulheres que reconstruíram a vida do outro lado da fronteira.">
   <div class="home">
-    <svg id="route" aria-hidden="true" preserveAspectRatio="none"><path d=""></path></svg>
 
+    <!-- OPENING -->
     <section class="hero gutter" aria-labelledby="h-title">
-      <canvas id="globe" aria-hidden="true"></canvas>
-      <div class="hero-meta label">
-        <span>Revista trimestral · Internacional</span>
-        <span class="hide-sm">{edition?.issueLabel ? String(edition.issueLabel) : "Edição 01"} · Novembro 2026</span>
-      </div>
-      <div class="hero-body">
-        <h1 class="title display" id="h-title" aria-label="A Mulher de Aço">
-          <span class="line" data-split>A Mulher</span>
-          <span class="line" data-split>de <span class="gold">Aço</span></span>
+      <span class="hero-line" aria-hidden="true"></span>
+      <div class="hero-copy">
+        <p class="eyebrow" data-in>Revista internacional · Edição 01 · Novembro 2026</p>
+        <h1 id="h-title" class="hero-title">
+          <span class="mask"><span data-in-line>A Mulher</span></span>
+          <span class="mask"><span data-in-line>de Aço</span></span>
         </h1>
-        <p class="label sub">The Woman of Steel</p>
-        <div class="hero-foot">
-          <p class="lede">Uma revista internacional feita por e sobre mulheres que reconstruíram a vida do outro lado da fronteira. <em>Beyond Borders, Beyond Limits.</em></p>
-          <div class="actions">
-            <a class="btn btn-gold" href={editionHref}>Ler a Edição 01 <span class="arr" aria-hidden="true">→</span></a>
-            <a class="btn btn-line" href="/partnerships">Anunciar na revista</a>
-          </div>
-          <p class="label coords">São Paulo <b>23.55° S</b><br />Connecticut <b>41.60° N</b></p>
+        <p class="hero-en" data-in>The Woman of Steel</p>
+        <p class="hero-lede" data-in>Uma revista feita por e sobre mulheres que reconstruíram a vida do outro lado da fronteira.</p>
+        <div class="hero-actions" data-in>
+          <a class="btn btn-gold" href={editionHref}>Ler a Edição 01 <span class="arr" aria-hidden="true">→</span></a>
+          <a class="btn btn-line" href="/partnerships">Anunciar</a>
         </div>
       </div>
-      <span class="scroll-cue" aria-hidden="true"></span>
-    </section>
-
-    <section class="story gutter" aria-label="Missão">
-      <div class="story-inner">
-        <p class="eyebrow">A missão</p>
-        <p class="statement" id="statement">Nasce da história de <span class="g">uma mulher.</span> Existe para dar visibilidade às histórias de <span class="g">muitas.</span></p>
-      </div>
-    </section>
-
-    <section class="marquee" aria-label="Manchetes da Edição 01">
-      <div class="mq-row a"><span>Leadership without borders</span><i></i><span>From Brazil to the world</span><i></i><span>Leadership without borders</span><i></i><span>From Brazil to the world</span><i></i></div>
-      <div class="mq-row b"><span>A strong woman, a brighter world</span><i></i><span>Real stories, real impact</span><i></i><span>A strong woman, a brighter world</span><i></i><span>Real stories, real impact</span><i></i></div>
-    </section>
-
-    <section class="edition gutter" aria-labelledby="ed-title">
-      <div class="ed-grid">
-        <div class="ed-copy">
-          <div class="ed-num display" aria-hidden="true">01</div>
-          <p class="eyebrow">{edition?.edition ? String(edition.edition) : "Edição internacional"} · Novembro 2026</p>
-          <h2 id="ed-title" class="display">A primeira edição já pode ser lida</h2>
-          <p>Liderança sem fronteiras, comunidade, cultura e a jornada de quem saiu do Brasil para o mundo.</p>
-          <dl class="specs">
-            {pages && <div><dt class="label">Páginas</dt><dd data-count={pages}>{pages}</dd></div>}
-            {price && <div><dt class="label">Preço</dt><dd>US$ <span data-count={price}>{price}</span></dd></div>}
-            <div><dt class="label">Idiomas</dt><dd>EN · PT</dd></div>
-          </dl>
-          <div class="actions">
-            {flipbook && <a class="btn btn-gold" href={flipbook} target="_blank" rel="noopener">Folhear a edição <span class="arr" aria-hidden="true">↗</span><span class="sr-only"> (abre em nova aba)</span></a>}
-            <a class="btn btn-line" href="/shop">Comprar</a>
-          </div>
-        </div>
-        <a class="cover-stage" href={editionHref} aria-label="Ver a Edição 01">
-          <span class="cover-tilt">
-            <span class="cover-mask">
-              <img src={coverSrc} alt="Capa da Edição 01 de A Mulher de Aço, novembro de 2026" width="612" height="807" loading="lazy" decoding="async" />
-              <span class="cover-sheen" aria-hidden="true"></span>
-            </span>
-          </span>
-          <span class="horizon" aria-hidden="true"></span>
+      <div class="hero-visual">
+        <a class="hero-frame frame" href={editionHref} data-tx="expand" aria-label="Abrir a Edição 01">
+          <img src={cover} alt="Capa da Edição 01 de A Mulher de Aço, novembro de 2026" width="612" height="807" fetchpriority="high" data-hero-img />
+          <span class="hero-curtain" aria-hidden="true"></span>
         </a>
+        <svg class="hero-outline" viewBox="0 0 100 132" preserveAspectRatio="none" aria-hidden="true">
+          <defs><linearGradient id="hg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#8A6A22"/><stop offset=".45" stop-color="#FFF0C2"/><stop offset="1" stop-color="#B8913A"/></linearGradient></defs>
+          <rect x=".5" y=".5" width="99" height="131" fill="none" stroke="url(#hg)" stroke-width=".35" vector-effect="non-scaling-stroke" pathLength="1" />
+        </svg>
+        <div class="hero-detail frame" aria-hidden="true">
+          <img src={cover} alt="" width="612" height="807" data-detail-img />
+        </div>
+      </div>
+      <dl class="hero-facts" data-in>
+        {pages && <div><dt class="label">Páginas</dt><dd class="numeral">{pages}</dd></div>}
+        {price && <div><dt class="label">Preço</dt><dd class="numeral">US$ {price}</dd></div>}
+        <div><dt class="label">Idiomas</dt><dd class="numeral">EN · PT</dd></div>
+      </dl>
+    </section>
+
+    <!-- MISSION (white) -->
+    <section class="mission light gutter" aria-labelledby="m-title">
+      <p class="eyebrow">A missão</p>
+      <h2 id="m-title" class="mission-quote" data-words>Nasce da história de uma mulher, mas existe para dar visibilidade às histórias de muitas mulheres.</h2>
+      <p class="label mission-sign">Maria Barile · Fundadora e diretora</p>
+    </section>
+
+    <!-- EDITION -->
+    <section class="edition gutter" aria-labelledby="e-title">
+      <a class="ed-frame frame" href={editionHref} data-tx="expand" data-mask aria-label="Abrir a Edição 01">
+        <img src={cover} alt="Capa da Edição 01 de A Mulher de Aço" width="612" height="807" loading="lazy" data-parallax />
+      </a>
+      <div class="ed-copy">
+        <p class="numeral ed-num" aria-hidden="true">01</p>
+        <p class="eyebrow" data-reveal>{edition?.edition ? "Edição internacional" : "Edição"} · Novembro 2026</p>
+        <h2 id="e-title" class="sec-title" data-reveal>A primeira edição</h2>
+        <p class="ed-lede" data-reveal>{edition?.slogan ? String(edition.slogan) : "Beyond Borders, Beyond Limits"}</p>
+        <ol class="ed-lines">
+          {COVER_LINES.map((l, i) => (
+            <li data-reveal><span class="numeral">{String(i + 1).padStart(2, "0")}</span><span>{l}</span></li>
+          ))}
+        </ol>
+        <div class="ed-actions" data-reveal>
+          {flipbook && <a class="btn btn-gold" href={flipbook} target="_blank" rel="noopener">Folhear a edição <span class="arr" aria-hidden="true">↗</span><span class="sr-only"> (abre em nova aba)</span></a>}
+          <a class="btn btn-line" href="/shop">Comprar</a>
+        </div>
       </div>
     </section>
 
-    <section class="routes" aria-labelledby="rt-title">
-      <div class="routes-head gutter">
-        <h2 id="rt-title" class="display">Editorias</h2>
-        <p>Reportagens por tema, escritas a partir da experiência de quem vive entre dois países.</p>
+    <!-- EDITORIAS -->
+    <section class="editorias gutter" aria-labelledby="ed-title">
+      <div class="sec-head">
+        <h2 id="ed-title" class="sec-title" data-reveal>Editorias</h2>
+        <p class="sec-note" data-reveal>Reportagens por tema, escritas a partir da experiência de quem vive entre dois países.</p>
       </div>
-      <div class="track">
+      <ul class="index">
         {EDITORIAS.map((name, i) => (
-          <div class="route"><span class="label">{String(i + 1).padStart(2, "0")}</span><a href="/blog" class="display">{name}</a></div>
+          <li data-reveal>
+            <a href="/blog">
+              <span class="numeral">{String(i + 1).padStart(2, "0")}</span>
+              <span class="index-name">{name}</span>
+              <span class="index-arr" aria-hidden="true">→</span>
+            </a>
+          </li>
         ))}
-      </div>
+      </ul>
     </section>
 
-    <section class="latest gutter" aria-labelledby="lt-title">
-      <div class="latest-head">
-        <h2 id="lt-title" class="display">Reportagens</h2>
-        <a href="/blog" class="link-draw label">Todas as reportagens</a>
+    <!-- REPORTING (white) -->
+    <section class="reporting light gutter" aria-labelledby="r-title">
+      <div class="sec-head">
+        <h2 id="r-title" class="sec-title" data-reveal>Reportagens</h2>
+        <a class="link-draw label" href="/blog">Todas as reportagens</a>
       </div>
       {posts.length === 0
-        ? <p class="text-[var(--color-steel)]">As primeiras reportagens estão a caminho.</p>
+        ? <p class="sec-note">As primeiras reportagens estão a caminho.</p>
         : <ul class="cards">
             {posts.map((p, i) => {
               const img = imgAttrs(p.coverUrl, "(min-width: 900px) 33vw, 100vw", 0.75);
               return (
-                <li>
-                  <a href={`/blog/${p.slug}`} class="card">
-                    <span class="card-img">
-                      {"src" in img ? <img {...img} alt="" /> : <span class="card-ph display" aria-hidden="true">{String(i + 1).padStart(2, "0")}</span>}
+                <li data-reveal>
+                  <a href={`/blog/${p.slug}`} class="card" data-tx={"src" in img ? "expand" : undefined}>
+                    <span class="card-frame frame" data-mask>
+                      {"src" in img
+                        ? <img {...img} alt="" />
+                        : <span class="card-empty"><span class="numeral">{String(i + 1).padStart(2, "0")}</span><span class="label">Imagem em breve</span></span>}
                     </span>
-                    <span class="label card-n">{String(i + 1).padStart(2, "0")}</span>
-                    <span class="card-t">{p.title}</span>
+                    {p.dateLabel && <span class="label card-meta">{p.dateLabel}</span>}
+                    <span class="card-title">{p.title}</span>
                     {p.excerpt && <span class="card-x">{p.excerpt}</span>}
                   </a>
                 </li>
@@ -137,28 +150,29 @@ const EDITORIAS = ["Saúde", "Educação", "Cultura", "Direitos humanos", "Turis
           </ul>}
     </section>
 
-    <section class="power daylight gutter" aria-labelledby="pw-title">
-      <div class="power-grid">
-        <div class="bigM display" aria-hidden="true" style={`background-image:url('${coverSrc}')`}>M</div>
-        <div>
-          <p class="eyebrow">Capítulo · The Power of M</p>
-          <h2 id="pw-title" class="display">Uma mulher forte, um mundo mais luminoso</h2>
-          <ul class="pw-list">
-            <li><span class="label">01</span><span>Leadership without borders</span></li>
-            <li><span class="label">02</span><span>Education, sports, culture, community</span></li>
-            <li><span class="label">03</span><span>From Brazil to the world: a journey of faith, resilience and purpose</span></li>
-          </ul>
-          <a class="btn btn-line pw-btn" href="/about">Quem somos <span class="arr" aria-hidden="true">→</span></a>
-        </div>
+    <!-- THE POWER OF M -->
+    <section class="power gutter" aria-labelledby="p-title">
+      <svg class="power-m" viewBox="0 0 120 100" aria-hidden="true">
+        <defs><linearGradient id="pm" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#8A6A22"/><stop offset=".5" stop-color="#FFF0C2"/><stop offset="1" stop-color="#B8913A"/></linearGradient></defs>
+        <path d="M8 92 V10 L60 70 L112 10 V92" fill="none" stroke="url(#pm)" stroke-width=".6" pathLength="1" data-draw />
+      </svg>
+      <div class="power-copy">
+        <p class="eyebrow" data-reveal>Capítulo · The Power of M</p>
+        <h2 id="p-title" class="sec-title" data-reveal>Uma mulher forte, um mundo mais luminoso</h2>
+        <p class="sec-note" data-reveal>Liderança sem fronteiras, comunidade e a jornada de quem saiu do Brasil para o mundo.</p>
+        <a class="btn btn-line" href="/about" data-reveal>Quem somos <span class="arr" aria-hidden="true">→</span></a>
       </div>
     </section>
 
-    <section class="partners gutter" aria-labelledby="pt-title">
-      <div class="p-inner">
-        <h2 id="pt-title" class="p-title">Sua marca diante de mulheres que <strong>atravessam fronteiras</strong></h2>
-        <div>
+    <!-- PARTNERS (white) -->
+    <section class="partners light gutter" aria-labelledby="pt-title">
+      <span class="rule" aria-hidden="true"></span>
+      <div class="pt-grid">
+        <h2 id="pt-title" class="sec-title pt-title" data-reveal>Sua marca diante de mulheres que atravessam fronteiras</h2>
+        <div class="pt-side" data-reveal>
           <p>Anúncios, patrocínios e parcerias em uma revista bilíngue lida nos Estados Unidos e fora deles.</p>
-          <span class="magnet"><a class="btn btn-gold" href="/partnerships">Falar com a equipe comercial <span class="arr" aria-hidden="true">→</span></a></span>
+          <a class="btn btn-gold" href="/partnerships">Falar com a equipe comercial <span class="arr" aria-hidden="true">→</span></a>
+          <p class="label pt-mail select-all">editorial@amulherdeaco.com</p>
         </div>
       </div>
     </section>
@@ -166,307 +180,187 @@ const EDITORIAS = ["Saúde", "Educação", "Cultura", "Direitos humanos", "Turis
 </SiteLayout>
 
 <style is:global>
-  .home { position: relative; }
-  .home > section { position: relative; z-index: 1; }
-  #route { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; overflow: visible; }
-  #route path { fill: none; stroke: var(--color-gold); stroke-width: 1.2; opacity: .55; vector-effect: non-scaling-stroke; }
+  .home section { position: relative; }
+  .sec-title { margin: 0; font-family: var(--font-display); font-weight: 500; font-size: clamp(36px, 4.6vw, 76px); line-height: 1; letter-spacing: -.04em; }
+  .sec-note { margin: 0; max-width: 46ch; color: var(--color-muted-foreground); }
+  .sec-head { display: flex; justify-content: space-between; align-items: end; gap: 24px; margin-bottom: 56px; }
+  .mask { display: block; overflow: hidden; padding-bottom: .08em; margin-bottom: -.08em; }
+  .mask > span { display: block; }
 
-  /* HERO */
-  .home .hero { min-height: 100svh; overflow: hidden; display: grid; grid-template-rows: auto 1fr; padding-top: calc(env(safe-area-inset-top, 0px) + 92px); padding-bottom: 40px; }
-  #globe { position: absolute; top: 50%; left: 62%; width: min(118vh, 105vw); height: min(118vh, 105vw); transform: translate(-50%, -48%); pointer-events: none; }
-  .hero-meta { position: relative; z-index: 2; display: flex; justify-content: space-between; gap: 16px; color: var(--color-steel); }
-  .hero-body { position: relative; z-index: 2; align-self: end; display: grid; gap: 22px; }
-  .home h1.title { margin: 0; font-weight: 850; line-height: .82; font-size: clamp(56px, 13.4vw, 230px); }
-  .home h1 .line { display: block; overflow: hidden; padding-bottom: .04em; }
-  .home h1 .ch { display: inline-block; font-stretch: calc(var(--w, 118) * 1%); will-change: transform; }
-  .home h1 .gold .ch { color: var(--color-gold); background: linear-gradient(100deg, var(--color-gold-deep) 0%, var(--color-gold) 35%, var(--color-gold-hot) 50%, var(--color-gold) 65%, var(--color-gold-deep) 100%); background-size: 250% 100%; -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; animation: mda-sweep 7s var(--ease-forged) infinite; }
-  @keyframes mda-sweep { 0%, 40% { background-position: 100% 0; } 100% { background-position: -50% 0; } }
-  .hero .sub { color: var(--color-gold); display: flex; align-items: center; gap: 12px; }
-  .hero .sub::before { content: ""; width: 40px; height: 1px; background: var(--color-gold); }
-  .hero-foot { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr) auto; gap: 32px; align-items: end; }
-  .lede { max-width: 34ch; font-size: clamp(17px, 1.4vw, 20px); color: #D8DCE5; margin: 0; }
-  .lede em { font-style: normal; color: var(--color-gold); }
-  .home .actions { display: flex; gap: 12px; flex-wrap: wrap; }
-  .coords { color: var(--color-steel); text-align: right; line-height: 1.8; margin: 0; }
-  .coords b { color: var(--color-gold); font-weight: 500; }
-  .scroll-cue { position: absolute; left: 50%; bottom: 16px; z-index: 2; width: 1px; height: 44px; background: linear-gradient(var(--color-gold), transparent); opacity: .7; }
+  /* OPENING */
+  .hero { min-height: 100svh; display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); grid-template-rows: 1fr auto; column-gap: 5vw; padding-top: calc(env(safe-area-inset-top, 0px) + 120px); padding-bottom: 40px; overflow: hidden; }
+  .hero-line { position: absolute; left: 0; right: 0; top: 50%; height: 1px; background: var(--gold-metal); transform: scaleX(0); transform-origin: left; opacity: 0; pointer-events: none; }
+  .hero-copy { align-self: center; display: grid; gap: 22px; position: relative; z-index: 2; }
+  .hero-title { margin: 0; font-weight: 500; font-size: clamp(56px, 8.4vw, 148px); line-height: .92; letter-spacing: -.05em; }
+  .hero-title .mask:last-child span { color: transparent; background: var(--gold-metal); background-size: 200% 100%; -webkit-background-clip: text; background-clip: text; }
+  .hero-en { margin: -6px 0 0; font-family: var(--font-serif); font-size: clamp(22px, 2vw, 30px); color: var(--color-mist); }
+  .hero-lede { margin: 0; max-width: 38ch; font-size: clamp(17px, 1.35vw, 20px); color: #DCE3F0; }
+  .hero-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 6px; }
+  .hero-visual { position: relative; align-self: center; justify-self: end; width: min(100%, calc(min(78svh, 807px) * 612 / 807)); aspect-ratio: 612 / 807; }
+  .hero-frame { position: absolute; inset: 0; display: block; }
+  .hero-frame img { transform-origin: 50% 40%; }
+  .hero-curtain { position: absolute; inset: 0; background: var(--color-navy); transform-origin: top; }
+  .hero-outline { position: absolute; inset: -14px; width: calc(100% + 28px); height: calc(100% + 28px); overflow: visible; pointer-events: none; }
+  .hero-outline rect { stroke-dasharray: 1; stroke-dashoffset: 0; }
+  .hero-detail { position: absolute; width: 38%; aspect-ratio: 1; left: -22%; bottom: 9%; box-shadow: 0 30px 80px -30px #000; outline: 1px solid rgba(215, 181, 101, .5); outline-offset: 6px; }
+  .hero-detail img { width: 100%; height: 100%; object-fit: cover; object-position: 63% 26%; transform: scale(2.2); transform-origin: 63% 26%; }
+  .hero-facts { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 40px; margin: 48px 0 0; padding-top: 20px; border-top: 1px solid var(--color-border); position: relative; z-index: 2; }
+  .hero-facts dt { color: var(--color-mist); }
+  .hero-facts dd { margin: 6px 0 0; font-size: 30px; }
   @media (max-width: 900px) {
-    #globe { left: 72%; top: 36%; width: 130vw; height: 130vw; }
-    .hero-foot { grid-template-columns: 1fr; }
-    .coords { text-align: left; }
-    .hero-meta .hide-sm { display: none; }
+    .hero { grid-template-columns: 1fr; grid-template-rows: auto auto auto; padding-top: calc(env(safe-area-inset-top, 0px) + 100px); row-gap: 40px; }
+    .hero-visual { justify-self: center; width: min(78vw, 420px); order: -1; }
+    .hero-detail { left: auto; right: -10%; bottom: -8%; width: 40%; }
+    .hero-facts { margin-top: 8px; gap: 28px; }
   }
 
-  /* STORY */
-  .home .story { min-height: 100svh; display: grid; align-items: center; }
-  .story-inner { display: grid; grid-template-columns: minmax(0, 3fr) minmax(0, 9fr); gap: 32px; align-items: start; }
-  .story-inner .eyebrow { padding-top: 14px; }
-  .statement { margin: 0; font-family: var(--font-display); font-weight: 500; font-stretch: 88%; font-size: clamp(34px, 5.2vw, 86px); line-height: 1; letter-spacing: -.025em; }
-  .statement .w { color: #3A4A69; transition: color var(--t-std) var(--ease-forged); }
-  .statement .w.on { color: var(--color-ivory); }
-  .statement .w.g.on { color: var(--color-gold); }
-  @media (max-width: 760px) { .story-inner { grid-template-columns: 1fr; } }
-
-  /* MARQUEE */
-  .home .marquee { padding-block: 8vh; overflow: hidden; display: grid; gap: 1.5vw; }
-  .mq-row { display: flex; align-items: center; gap: 3vw; white-space: nowrap; width: max-content; will-change: transform; font-family: var(--font-display); text-transform: uppercase; line-height: .9; font-size: clamp(44px, 9vw, 150px); letter-spacing: -.02em; }
-  .mq-row.a { font-weight: 900; font-stretch: 140%; color: var(--color-ivory); }
-  .mq-row.b { font-weight: 300; font-style: italic; font-stretch: 55%; color: transparent; -webkit-text-stroke: 1px var(--color-gold); }
-  .mq-row i { display: inline-block; width: .18em; height: .18em; border-radius: 50%; background: var(--color-gold); }
+  /* MISSION */
+  .mission { padding-block: 18vh; display: grid; gap: 32px; }
+  .mission-quote { margin: 0; font-family: var(--font-display); font-weight: 400; font-size: clamp(34px, 5vw, 84px); line-height: 1.04; letter-spacing: -.04em; max-width: 22ch; }
+  .mission-quote .w { opacity: .14; transition: opacity 400ms var(--ease-out); }
+  .mission-quote .w.on { opacity: 1; }
+  .mission-sign { color: var(--color-muted-foreground); }
 
   /* EDITION */
-  .home .edition { min-height: 100svh; display: grid; align-items: center; padding-block: 12vh; }
-  .ed-grid { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); gap: min(6vw, 80px); align-items: center; }
-  .ed-num { font-weight: 200; font-stretch: calc(var(--nw, 50) * 1%); font-size: clamp(120px, 22vw, 360px); line-height: .78; letter-spacing: -.04em; color: transparent; -webkit-text-stroke: 1px var(--color-gold); }
-  .ed-copy h2 { margin: 18px 0 14px; font-weight: 700; font-size: clamp(30px, 3.4vw, 52px); line-height: 1; }
-  .ed-copy > p:not(.eyebrow) { max-width: 40ch; color: #C9CFDB; margin: 0 0 24px; }
-  .specs { display: grid; grid-template-columns: repeat(3, auto); justify-content: start; gap: 28px; margin: 0 0 30px; padding: 18px 0; border-block: 1px solid var(--color-border); }
-  .specs dt { color: var(--color-steel); }
-  .specs dd { margin: 6px 0 0; font-family: var(--font-display); font-weight: 600; font-stretch: 110%; font-size: 28px; font-variant-numeric: tabular-nums; }
-  .cover-stage { position: relative; display: block; perspective: 1400px; }
-  .cover-tilt { display: block; transition: transform var(--t-std) var(--ease-forged); transform-style: preserve-3d; }
-  .cover-mask { position: relative; display: block; aspect-ratio: 612 / 807; width: min(100%, calc(74svh * 612 / 807)); margin-inline: auto; clip-path: inset(var(--ct, 0%) 0 var(--cb, 0%) 0); overflow: hidden; box-shadow: 0 40px 120px -40px #000; }
-  .cover-mask img { display: block; width: 100%; height: 100%; object-fit: cover; }
-  .cover-sheen { position: absolute; inset: 0; pointer-events: none; background: linear-gradient(115deg, transparent 35%, rgba(243, 216, 142, .35) 50%, transparent 65%); background-size: 250% 100%; background-position: 120% 0; transition: background-position var(--t-cine) var(--ease-forged); mix-blend-mode: screen; }
-  .cover-stage:hover .cover-sheen { background-position: -20% 0; }
-  .horizon { position: absolute; left: -6%; right: -6%; top: 50%; height: 1px; background: linear-gradient(90deg, transparent, var(--color-gold), transparent); opacity: 0; }
-  @media (max-width: 860px) { .ed-grid { grid-template-columns: 1fr; } .ed-num { font-size: 34vw; } }
+  .edition { padding-block: 16vh; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 7vw; align-items: center; }
+  .ed-frame { display: block; aspect-ratio: 612 / 807; width: min(100%, calc(min(82svh, 807px) * 612 / 807)); justify-self: center; }
+  .ed-frame img { transform: scale(1.12); }
+  .ed-copy { display: grid; gap: 20px; }
+  .ed-num { margin: 0 0 -10px; font-size: clamp(96px, 12vw, 200px); color: transparent; -webkit-text-stroke: 1px var(--color-gold); }
+  .ed-lede { margin: 0; font-family: var(--font-serif); font-size: clamp(24px, 2.2vw, 34px); color: var(--color-gold-light); }
+  .ed-lines { list-style: none; margin: 8px 0; padding: 0; border-top: 1px solid var(--color-border); }
+  .ed-lines li { display: grid; grid-template-columns: 48px 1fr; gap: 12px; padding: 14px 0; border-bottom: 1px solid var(--color-border); }
+  .ed-lines .numeral { color: var(--color-gold); font-size: 20px; }
+  .ed-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 8px; }
+  @media (max-width: 900px) { .edition { grid-template-columns: 1fr; } .ed-frame { width: min(80vw, 440px); } }
 
   /* EDITORIAS */
-  .home .routes { overflow: hidden; padding-block: 12vh 10vh; }
-  .routes-head { display: flex; justify-content: space-between; align-items: end; gap: 24px; margin-bottom: 6vh; }
-  .routes-head h2 { margin: 0; font-weight: 700; font-size: clamp(28px, 3vw, 44px); }
-  .routes-head p { margin: 0; max-width: 36ch; color: var(--color-steel); }
-  .track { display: flex; gap: 6vw; width: max-content; padding-left: max(var(--gutter), env(safe-area-inset-left, 0px)); padding-right: 30vw; will-change: transform; }
-  .route { display: grid; gap: 10px; }
-  .route .label { color: var(--color-steel); }
-  .route a { font-weight: 800; font-size: clamp(56px, 10vw, 170px); text-decoration: none; font-stretch: calc(var(--rw, 60) * 1%); color: transparent; -webkit-text-stroke: 1px #3A4A69; transition: color var(--t-std) var(--ease-forged), -webkit-text-stroke-color var(--t-std) var(--ease-forged), font-stretch var(--t-cine) var(--ease-forged); }
-  .route.lit a { color: var(--color-ivory); -webkit-text-stroke-color: transparent; }
-  .route a:hover, .route a:focus-visible { color: var(--color-gold); -webkit-text-stroke-color: transparent; --rw: 130; }
-  @media (max-width: 760px) {
-    .routes-head { flex-direction: column; align-items: flex-start; }
-    .track { flex-direction: column; width: auto; padding-right: max(var(--gutter), env(safe-area-inset-right, 0px)); gap: 28px; }
-    .route a { font-size: 15vw; color: var(--color-ivory); -webkit-text-stroke: 0; }
-  }
+  .editorias { padding-block: 14vh; background: var(--color-navy-2); }
+  .index { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 5vw; border-top: 1px solid var(--color-border); }
+  .index li { border-bottom: 1px solid var(--color-border); }
+  .index a { position: relative; display: grid; grid-template-columns: 56px 1fr auto; align-items: baseline; gap: 16px; padding: 22px 0; text-decoration: none; }
+  .index a::after { content: ""; position: absolute; left: 0; right: 0; bottom: -1px; height: 1px; background: var(--gold-metal); transform: scaleX(0); transform-origin: left; transition: transform var(--t-cine) var(--ease-out); }
+  .index a:hover::after, .index a:focus-visible::after { transform: scaleX(1); }
+  .index .numeral { color: var(--color-gold); font-size: 22px; }
+  .index-name { font-family: var(--font-display); font-weight: 400; font-size: clamp(26px, 2.6vw, 42px); letter-spacing: -.03em; transition: transform var(--t-std) var(--ease-out); }
+  .index a:hover .index-name, .index a:focus-visible .index-name { transform: translateX(12px); }
+  .index-arr { color: var(--color-gold); opacity: 0; transform: translateX(-10px); transition: opacity var(--t-std) var(--ease-out), transform var(--t-std) var(--ease-out); }
+  .index a:hover .index-arr, .index a:focus-visible .index-arr { opacity: 1; transform: none; }
+  @media (max-width: 760px) { .index { grid-template-columns: 1fr; } .sec-head { flex-direction: column; align-items: flex-start; } }
 
-  /* LATEST */
-  .home .latest { padding-block: 10vh 14vh; }
-  .latest-head { display: flex; justify-content: space-between; align-items: end; gap: 16px; margin-bottom: 40px; border-bottom: 1px solid var(--color-border); padding-bottom: 16px; }
-  .latest-head h2 { margin: 0; font-weight: 700; font-size: clamp(28px, 3vw, 44px); }
-  .latest-head a { color: var(--color-gold); }
-  .cards { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 28px; }
-  .card { display: grid; gap: 12px; text-decoration: none; color: inherit; }
-  .card-img { position: relative; display: block; aspect-ratio: 4 / 3; overflow: hidden; background: var(--color-secondary); clip-path: inset(0 0 0 0); transition: clip-path var(--t-cine) var(--ease-forged); }
-  .card-img img { width: 100%; height: 100%; object-fit: cover; transition: transform var(--t-cine) var(--ease-forged); }
-  .card:hover .card-img { clip-path: inset(3% 3% 3% 3%); }
-  .card:hover .card-img img { transform: scale(1.06); }
-  .card-ph { position: absolute; inset: 0; display: grid; place-items: center; font-size: 96px; font-weight: 200; font-stretch: 50%; color: transparent; -webkit-text-stroke: 1px #3A4A69; transition: font-stretch var(--t-cine) var(--ease-forged), -webkit-text-stroke-color var(--t-std) var(--ease-forged); }
-  .card:hover .card-ph { font-stretch: 150%; -webkit-text-stroke-color: var(--color-gold); }
-  .card-n { color: var(--color-gold); }
-  .card-t { font-family: var(--font-display); font-weight: 700; font-stretch: 85%; font-size: 24px; line-height: 1.05; text-transform: uppercase; }
-  .card-x { color: var(--color-steel); }
-  @media (max-width: 900px) { .cards { grid-template-columns: 1fr; } }
+  /* REPORTING */
+  .reporting { padding-block: 14vh; }
+  .cards { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 32px; }
+  .card { display: grid; gap: 14px; text-decoration: none; color: inherit; }
+  .card-frame { display: block; aspect-ratio: 4 / 5; }
+  .card-frame img { transition: transform 1.2s var(--ease-out); }
+  .card:hover .card-frame img { transform: scale(1.05); }
+  .card-empty { position: absolute; inset: 0; display: grid; align-content: space-between; padding: 22px; color: var(--color-white); background: var(--color-navy); }
+  .card-empty .numeral { font-size: 64px; color: transparent; -webkit-text-stroke: 1px var(--color-gold); transition: transform var(--t-cine) var(--ease-out); }
+  .card:hover .card-empty .numeral { transform: translateY(-6px); }
+  .card-empty .label { color: var(--color-mist); }
+  .card-meta { color: var(--color-gold-deep); }
+  .card-title { font-family: var(--font-display); font-weight: 500; font-size: 24px; line-height: 1.15; letter-spacing: -.02em; background: linear-gradient(currentColor, currentColor) 0 100% / 0 1px no-repeat; transition: background-size var(--t-cine) var(--ease-out); }
+  .card:hover .card-title { background-size: 100% 1px; }
+  .card-x { color: var(--color-muted-foreground); }
+  @media (max-width: 900px) { .cards { grid-template-columns: 1fr; } .card-frame { aspect-ratio: 16 / 10; } }
 
   /* POWER OF M */
-  .home .power { padding-block: 14vh 16vh; overflow: hidden; }
-  .power-grid { display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); gap: 4vw; align-items: center; }
-  .bigM { font-weight: 900; font-size: clamp(240px, 46vw, 760px); line-height: .74; letter-spacing: -.05em; font-stretch: calc(var(--mw, 50) * 1%); background-position: 50% var(--my, 30%); background-size: 120% auto; background-repeat: no-repeat; -webkit-background-clip: text; background-clip: text; color: transparent; user-select: none; }
-  .power h2 { margin: 14px 0 26px; font-weight: 700; font-stretch: 92%; font-size: clamp(32px, 4vw, 64px); line-height: .95; }
-  .pw-list { list-style: none; margin: 0 0 32px; padding: 0; border-top: 1px solid var(--color-border); }
-  .pw-list li { display: grid; grid-template-columns: 44px 1fr; gap: 12px; padding: 16px 0; border-bottom: 1px solid var(--color-border); font-size: 17px; }
-  .pw-list .label { color: var(--color-gold-deep); padding-top: 3px; }
-  .power .pw-btn { color: var(--color-ink); border-color: var(--color-ink); }
-  @media (max-width: 860px) { .power-grid { grid-template-columns: 1fr; } .bigM { font-size: 70vw; } }
+  .power { padding-block: 16vh; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 6vw; align-items: center; overflow: hidden; }
+  .power-m { width: 100%; max-width: 620px; height: auto; overflow: visible; }
+  .power-m path { stroke-dasharray: 1; stroke-dashoffset: 0; }
+  .power-copy { display: grid; gap: 22px; justify-items: start; }
+  @media (max-width: 900px) { .power { grid-template-columns: 1fr; } .power-m { max-width: 320px; } }
 
   /* PARTNERS */
-  .home .partners { padding-block: 16vh; }
-  .p-inner { display: grid; grid-template-columns: minmax(0, 8fr) minmax(0, 4fr); gap: 4vw; align-items: end; }
-  .p-title { margin: 0; font-family: var(--font-display); font-weight: 300; font-stretch: 75%; font-size: clamp(40px, 6.4vw, 110px); line-height: .92; letter-spacing: -.03em; }
-  .p-title strong { font-weight: 850; font-stretch: 120%; color: var(--color-gold); }
-  .partners p { color: #C9CFDB; margin: 0 0 26px; max-width: 34ch; }
-  .magnet { display: inline-block; }
-  @media (max-width: 860px) { .p-inner { grid-template-columns: 1fr; } }
-
-  /* perf: the scrubbed width/background on these glyphs re-lays and repaints them every frame;
-     containment keeps that work inside the glyph's own box instead of the whole section */
-  .ed-num, .bigM { contain: layout paint; }
-  /* perf: the page-long route repaints a page-tall SVG layer while scrolling; phones skip it */
-  @media (max-width: 760px) { #route { display: none; } }
-
-  @media (prefers-reduced-motion: reduce) {
-    #route { display: none; }
-    .statement .w { color: var(--color-ivory); }
-    .statement .w.g { color: var(--color-gold); }
-    .route a { color: var(--color-ivory); -webkit-text-stroke: 0; }
-  }
+  .partners { padding-block: 0 16vh; }
+  .partners .rule { margin-bottom: 14vh; }
+  .pt-grid { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); gap: 6vw; align-items: end; }
+  .pt-title { max-width: 16ch; }
+  .pt-side { display: grid; gap: 22px; justify-items: start; }
+  .pt-side p { margin: 0; color: var(--color-muted-foreground); }
+  .pt-mail { color: var(--color-gold-deep); }
+  @media (max-width: 900px) { .pt-grid { grid-template-columns: 1fr; } }
 </style>
 
 <script>
   import { gsap } from "gsap";
   import { ScrollTrigger } from "gsap/ScrollTrigger";
-  import { createGlobe } from "../scripts/globe";
 
   const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
-  const G = createGlobe(document.getElementById("globe") as HTMLCanvasElement, reduce);
 
-  // split the title into characters (screen readers read the h1's aria-label)
-  document.querySelectorAll<HTMLElement>("[data-split]").forEach((line) => {
-    const walk = (node: Node) => [...node.childNodes].forEach((n) => {
-      if (n.nodeType === 3) {
-        const frag = document.createDocumentFragment();
-        [...(n.textContent ?? "")].forEach((c) => {
-          const s = document.createElement("span");
-          s.className = "ch"; s.textContent = c === " " ? " " : c; s.setAttribute("aria-hidden", "true");
-          frag.appendChild(s);
-        });
-        (n as ChildNode).replaceWith(frag);
-      } else if (n.nodeType === 1) walk(n);
+  // mission words (the sentence stays one readable heading; spans only carry opacity)
+  const quote = document.querySelector<HTMLElement>("[data-words]");
+  const words: HTMLElement[] = [];
+  if (quote) {
+    const text = quote.textContent ?? "";
+    quote.setAttribute("aria-label", text.trim());
+    quote.textContent = "";
+    text.trim().split(/\s+/).forEach((w, i, all) => {
+      const s = document.createElement("span");
+      s.className = "w"; s.textContent = w; s.setAttribute("aria-hidden", "true");
+      quote.appendChild(s);
+      if (i < all.length - 1) quote.appendChild(document.createTextNode(" "));
+      words.push(s);
     });
-    walk(line);
-  });
-
-  // statement words
-  const st = document.getElementById("statement")!;
-  const wrapWords = (el: Element) => [...el.childNodes].forEach((n) => {
-    if (n.nodeType === 3) {
-      const frag = document.createDocumentFragment();
-      (n.textContent ?? "").split(/(\s+)/).forEach((w) => {
-        if (!w.trim()) { frag.appendChild(document.createTextNode(w)); return; }
-        const s = document.createElement("span");
-        s.className = "w" + (el.classList.contains("g") ? " g" : ""); s.textContent = w;
-        frag.appendChild(s);
-      });
-      (n as ChildNode).replaceWith(frag);
-    } else if (n.nodeType === 1) wrapWords(n as Element);
-  });
-  wrapWords(st);
-  const words = [...st.querySelectorAll(".w")];
+  }
 
   if (reduce) {
     words.forEach((w) => w.classList.add("on"));
-    document.querySelectorAll(".route").forEach((r) => r.classList.add("lit"));
   } else {
     gsap.registerPlugin(ScrollTrigger);
-    // keep the timeline on the clock even when frames drop (low-power phones, background tabs):
-    // the opening must finish in ~3 s, never crawl.
     gsap.ticker.lagSmoothing(0);
-    const chars = document.querySelectorAll(".home h1 .ch");
+    // when the page was reached through a transition, the opening waits for the curtain to lift
+    const delay = document.documentElement.classList.contains("tx-cover") ? 0.7 : 0.1;
 
-    // INTRO: one point, then many; the name rises through its mask and widens
-    gsap.timeline({ defaults: { ease: "expo.out" } })
-      .set(chars, { yPercent: 115, "--w": 50 })
-      .to(G, { intro: 1, duration: 2.2, ease: "power3.inOut" }, 0.15)
-      .to(G, { arcs: 1, duration: 2.4, ease: "power2.out" }, 1.4)
-      .to(chars, { yPercent: 0, duration: 1.1, stagger: 0.035 }, 0.9)
-      .to(chars, { "--w": 118, duration: 1.6, ease: "power4.out", stagger: 0.035 }, 1.0)
-      .from(".hero-meta, .hero .sub, .lede, .hero .actions .btn, .coords", { autoAlpha: 0, y: 18, duration: 0.9, stagger: 0.07 }, 1.6)
-      .from(".scroll-cue", { scaleY: 0, transformOrigin: "top", duration: 0.8 }, 2.2);
+    // OPENING: a gold line crosses the screen, the curtain over the cover lifts while the picture
+    // settles, the name rises through its mask, the rest follows in sequence.
+    const tl = gsap.timeline({ delay, defaults: { ease: "expo.out" } });
+    tl.set(".hero [data-in], .hero-facts", { autoAlpha: 0, y: 22 })
+      .set("[data-in-line]", { yPercent: 110 })
+      .set(".hero-detail", { autoAlpha: 0, y: 40 })
+      .set(".hero-outline rect", { strokeDashoffset: 1 })
+      .to(".hero-line", { opacity: 1, scaleX: 1, duration: 0.9, ease: "power3.inOut" }, 0)
+      .to(".hero-line", { opacity: 0, duration: 0.6, ease: "power2.out" }, 0.95)
+      .to(".hero-curtain", { scaleY: 0, duration: 1.2, ease: "power4.inOut" }, 0.55)
+      .fromTo("[data-hero-img]", { scale: 1.22 }, { scale: 1, duration: 2.2, ease: "power3.out" }, 0.55)
+      .to(".hero-outline rect", { strokeDashoffset: 0, duration: 1.6, ease: "power2.inOut" }, 1.1)
+      .to("[data-in-line]", { yPercent: 0, duration: 1.2, stagger: 0.1 }, 0.75)
+      .to(".hero [data-in]", { autoAlpha: 1, y: 0, duration: 1, stagger: 0.08 }, 1.05)
+      .to(".hero-detail", { autoAlpha: 1, y: 0, duration: 1.3 }, 1.4)
+      .to(".hero-facts", { autoAlpha: 1, y: 0, duration: 1 }, 1.6);
 
-    // hero leaves: globe sinks and dims, the name compresses
-    gsap.timeline({ scrollTrigger: { trigger: ".home .hero", start: "top top", end: "bottom top", scrub: true } })
-      .to(G, { scale: 1.35, dim: 0.35, ease: "none" }, 0)
-      .to(".home h1.title", { yPercent: -18, ease: "none" }, 0);
-    // (perf) the exit no longer scrubs font-stretch on every scroll frame: width changes re-lay the
-    // whole title; transform alone carries the departure.
+    // the detail crop drifts slower than the cover as the opening leaves (image parallax only).
+    // GSAP owns this transform, so the crop's zoom is set here too (CSS keeps it for reduced motion).
+    gsap.set(".hero-detail img", { scale: 2.2, transformOrigin: "63% 26%" });
+    gsap.to(".hero-detail img", { yPercent: 14, ease: "none", scrollTrigger: { trigger: ".hero", start: "top top", end: "bottom top", scrub: true } });
+    gsap.to(".hero-frame", { yPercent: -6, ease: "none", scrollTrigger: { trigger: ".hero", start: "top top", end: "bottom top", scrub: true } });
 
-    // STORY: the words light as the reader advances
-    ScrollTrigger.create({
-      trigger: ".home .story", start: "top top", end: "+=140%", pin: true, scrub: true,
-      onUpdate: (s) => { const n = Math.round(s.progress * words.length * 1.1); words.forEach((w, i) => w.classList.toggle("on", i < n)); },
-    });
-
-    // MARQUEE: the cover's headlines travel in opposite directions
-    gsap.timeline({ scrollTrigger: { trigger: ".home .marquee", start: "top bottom", end: "bottom top", scrub: 0.6 } })
-      .fromTo(".mq-row.a", { xPercent: 0 }, { xPercent: -30, ease: "none" }, 0)
-      .fromTo(".mq-row.b", { xPercent: -30 }, { xPercent: 0, ease: "none" }, 0);
-
-    // EDITION: the cover opens from a horizon, out of a close-up on the globe
-    const mask = document.querySelector<HTMLElement>(".cover-mask")!;
-    gsap.timeline({ scrollTrigger: { trigger: ".home .edition", start: "top 70%", end: "center center", scrub: 1 } })
-      // clip-path tweened directly (not through inherited custom properties that restyle the children)
-      .fromTo(mask, { clipPath: "inset(49.5% 0% 49.5% 0%)" }, { clipPath: "inset(0% 0% 0% 0%)", ease: "power2.inOut" }, 0)
-      .fromTo(mask.querySelector("img"), { scale: 2.8, transformOrigin: "52% 33%" }, { scale: 1, ease: "power2.inOut" }, 0)
-      .fromTo(".horizon", { opacity: 1, scaleX: 0.2 }, { opacity: 0, scaleX: 1.1, ease: "power2.out" }, 0)
-      .fromTo(".ed-num", { "--nw": 50 }, { "--nw": 150, ease: "none" }, 0);
-    document.querySelectorAll<HTMLElement>("[data-count]").forEach((el) => {
-      const to = Number(el.dataset.count), o = { v: 0 };
-      gsap.to(o, { v: to, duration: 1.4, ease: "power3.out", scrollTrigger: { trigger: el, start: "top 85%" }, onUpdate: () => { el.textContent = String(Math.round(o.v)); } });
-    });
-    const stage = document.querySelector<HTMLElement>(".cover-stage")!, tilt = stage.querySelector<HTMLElement>(".cover-tilt")!;
-    stage.addEventListener("pointermove", (e) => {
-      const r = stage.getBoundingClientRect(), x = (e.clientX - r.left) / r.width - 0.5, y = (e.clientY - r.top) / r.height - 0.5;
-      tilt.style.transform = `rotateY(${x * 7}deg) rotateX(${-y * 7}deg)`;
-    });
-    stage.addEventListener("pointerleave", () => { tilt.style.transform = ""; });
-
-    // EDITORIAS: a horizontal route on wide screens; the word at the centre lights
-    const mm = gsap.matchMedia();
-    mm.add("(min-width: 761px)", () => {
-      const track = document.querySelector<HTMLElement>(".track")!;
-      const routes = [...document.querySelectorAll<HTMLElement>(".route")];
-      const dist = () => track.scrollWidth - innerWidth;
-      // (perf) positions are measured once per refresh, never read from the DOM while scrolling:
-      // a getBoundingClientRect per item per frame forced a style/layout flush on every scroll frame.
-      let spans: { left: number; right: number }[] = [];
-      const measure = () => { spans = routes.map((r) => ({ left: r.offsetLeft, right: r.offsetLeft + r.offsetWidth })); };
-      measure();
-      const tween = gsap.to(track, {
-        x: () => -dist(), ease: "none",
-        scrollTrigger: {
-          trigger: ".home .routes", start: "top top", end: () => "+=" + dist(), pin: true, scrub: 1, invalidateOnRefresh: true,
-          onRefresh: measure,
-          onUpdate: () => {
-            const x = Number(gsap.getProperty(track, "x")), c = innerWidth / 2;
-            spans.forEach((s, i) => routes[i].classList.toggle("lit", s.left + x < c && s.right + x > c * 0.6));
-          },
-        },
+    // MISSION: the words arrive as the reader reaches them (no pinning)
+    if (quote) {
+      ScrollTrigger.create({
+        trigger: quote, start: "top 80%", end: "bottom 45%", scrub: true,
+        onUpdate: (s) => { const n = Math.round(s.progress * words.length); words.forEach((w, i) => w.classList.toggle("on", i < n)); },
       });
-      return () => tween.kill();
-    });
-    mm.add("(max-width: 760px)", () => { document.querySelectorAll(".route").forEach((r) => r.classList.add("lit")); });
-
-    // LATEST: cards rise through their own mask, once
-    gsap.from(".cards li", { yPercent: 12, autoAlpha: 0, duration: 1, ease: "expo.out", stagger: 0.08, scrollTrigger: { trigger: ".cards", start: "top 80%" } });
-
-    // POWER OF M: the letter widens, the cover moves inside it
-    gsap.timeline({ scrollTrigger: { trigger: ".home .power", start: "top bottom", end: "bottom top", scrub: true } })
-      .fromTo(".bigM", { "--mw": 50, "--my": "10%" }, { "--mw": 150, "--my": "60%", ease: "none" }, 0);
-    gsap.from(".pw-list li", { yPercent: 100, autoAlpha: 0, duration: 0.9, ease: "expo.out", stagger: 0.08, scrollTrigger: { trigger: ".pw-list", start: "top 80%" } });
-
-    // PARTNERS: the main commercial action answers the pointer
-    const mag = document.querySelector<HTMLElement>(".magnet")!;
-    mag.addEventListener("pointermove", (e) => {
-      const r = mag.getBoundingClientRect();
-      gsap.to(mag, { x: (e.clientX - r.left - r.width / 2) * 0.25, y: (e.clientY - r.top - r.height / 2) * 0.35, duration: 0.5, ease: "power3.out" });
-    });
-    mag.addEventListener("pointerleave", () => gsap.to(mag, { x: 0, y: 0, duration: 0.8, ease: "elastic.out(1,.4)" }));
-    gsap.from(".p-title", { yPercent: 30, autoAlpha: 0, duration: 1.1, ease: "expo.out", scrollTrigger: { trigger: ".home .partners", start: "top 75%" } });
-
-    // ROUTE: one continuous gold line drawn by the scroll, from hero to the commercial call
-    const svg = document.getElementById("route") as unknown as SVGSVGElement, path = svg.querySelector("path")!;
-    const home = document.querySelector<HTMLElement>(".home")!;
-    const build = () => {
-      const w = home.offsetWidth, h = home.offsetHeight;
-      svg.setAttribute("viewBox", `0 0 ${w} ${h}`);
-      const secs = [...home.querySelectorAll<HTMLElement>(":scope > section")];
-      let d = `M ${w * 0.62} ${innerHeight * 0.5}`;
-      secs.forEach((s, i) => {
-        const y = s.offsetTop + s.offsetHeight * 0.5, x = i % 2 ? w * 0.12 : w * 0.88;
-        d += ` C ${x} ${s.offsetTop}, ${x} ${y - s.offsetHeight * 0.25}, ${w * (i % 2 ? 0.3 : 0.7)} ${y}`;
-      });
-      path.setAttribute("d", d);
-      const len = path.getTotalLength();
-      path.style.strokeDasharray = String(len);
-      return len;
-    };
-    // (perf) hidden on phones and under reduced motion: no path to build, nothing to scrub
-    if (getComputedStyle(svg).display !== "none") {
-    let len = build();
-    ScrollTrigger.create({
-      trigger: home, start: "top top", end: "bottom bottom", scrub: 0.4,
-      onUpdate: (s) => { path.style.strokeDashoffset = String(len * (1 - s.progress)); },
-      onRefresh: () => { len = build(); },
-    });
     }
+
+    // reveals: each block rises once when it enters
+    gsap.utils.toArray<HTMLElement>("[data-reveal]").forEach((el) => {
+      gsap.from(el, { y: 36, autoAlpha: 0, duration: 1.1, ease: "expo.out", scrollTrigger: { trigger: el, start: "top 88%", once: true } });
+    });
+
+    // masked frames open from the bottom edge
+    gsap.utils.toArray<HTMLElement>("[data-mask]").forEach((el) => {
+      gsap.fromTo(el, { clipPath: "inset(100% 0% 0% 0%)" }, { clipPath: "inset(0% 0% 0% 0%)", duration: 1.4, ease: "power4.inOut", scrollTrigger: { trigger: el, start: "top 85%", once: true } });
+    });
+
+    // image parallax inside its frame
+    gsap.utils.toArray<HTMLElement>("[data-parallax]").forEach((img) => {
+      gsap.fromTo(img, { yPercent: -6 }, { yPercent: 6, ease: "none", scrollTrigger: { trigger: img.parentElement, start: "top bottom", end: "bottom top", scrub: true } });
+    });
+
+    // the M is drawn by the scroll
+    const m = document.querySelector<SVGPathElement>("[data-draw]");
+    if (m) gsap.fromTo(m, { strokeDashoffset: 1 }, { strokeDashoffset: 0, ease: "none", scrollTrigger: { trigger: ".power", start: "top 75%", end: "center 45%", scrub: true } });
   }
 </script>

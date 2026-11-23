@@ -1,40 +1,39 @@
 ---
-// Quem somos e missão — requested by the founder (orientations of 20 Nov 2026, item 2):
-// the journalistic purpose, the values and the commitment to give women a voice.
+// Quem somos e missão — requested by the founder (orientations of 20 Nov 2026, item 2).
 // The mission sentence is hers; every other paragraph is a visible placeholder until she approves it.
 import SiteLayout from "../layouts/SiteLayout.astro";
 import PageHero from "../components/PageHero.astro";
 
+const PILLARS = [
+  { n: "01", t: "Propósito jornalístico", ph: "Propósito jornalístico da revista, aguardando aprovação da direção." },
+  { n: "02", t: "Valores", ph: "Valores da revista, aguardando aprovação da direção." },
+  { n: "03", t: "Compromisso", ph: "O compromisso de dar voz às mulheres de diferentes origens, aguardando aprovação da direção." },
+];
 const EDITORIAS = ["Saúde", "Educação", "Cultura", "Turismo", "Esporte", "Direitos humanos", "Meio ambiente", "Política", "Economia", "Gastronomia"];
 ---
 <SiteLayout title="Quem somos" description="A Mulher de Aço: propósito jornalístico, valores e o compromisso de dar voz às mulheres.">
   <PageHero eyebrow="Quem somos · Missão" title="Uma revista para muitas vozes" intro="Portal oficial da revista A Mulher de Aço / The Woman of Steel: comunicação, jornalismo, cultura e valorização das mulheres, com presença institucional e oportunidades comerciais." />
 
   <section class="ab-mission" aria-labelledby="ab-m">
-    <p class="eyebrow">A missão</p>
-    <h2 id="ab-m" class="display ab-quote">Nasce da história de uma mulher, mas existe para dar visibilidade às histórias de <em>muitas mulheres.</em></h2>
+    <span class="numeral ab-mark" aria-hidden="true">“</span>
+    <h2 id="ab-m" class="ab-quote">Nasce da história de uma mulher, mas existe para dar visibilidade às histórias de muitas mulheres.</h2>
     <p class="label ab-sign">Maria Barile · Fundadora e diretora</p>
   </section>
 
-  <section class="ab-grid" aria-label="Propósito e valores">
-    <article class="ab-card">
-      <p class="label">01 · Propósito jornalístico</p>
-      <p class="ab-ph">[Texto provisório] Propósito jornalístico da revista, aguardando aprovação da direção.</p>
-    </article>
-    <article class="ab-card">
-      <p class="label">02 · Valores</p>
-      <p class="ab-ph">[Texto provisório] Valores da revista, aguardando aprovação da direção.</p>
-    </article>
-    <article class="ab-card">
-      <p class="label">03 · Compromisso</p>
-      <p class="ab-ph">[Texto provisório] O compromisso de dar voz às mulheres de diferentes origens, aguardando aprovação da direção.</p>
-    </article>
+  <section class="ab-pillars" aria-label="Propósito, valores e compromisso">
+    {PILLARS.map((p) => (
+      <article class="ab-pillar">
+        <span class="numeral ab-n">{p.n}</span>
+        <h3 class="ab-t">{p.t}</h3>
+        <p class="ab-ph">[Texto provisório] {p.ph}</p>
+      </article>
+    ))}
   </section>
 
   <section class="ab-ed" aria-labelledby="ab-e">
-    <h2 id="ab-e" class="display">Editorias</h2>
+    <h2 id="ab-e" class="ab-h">Editorias</h2>
     <ul>
-      {EDITORIAS.map((e, i) => <li><span class="label">{String(i + 1).padStart(2, "0")}</span><span class="display">{e}</span></li>)}
+      {EDITORIAS.map((e, i) => <li><span class="numeral">{String(i + 1).padStart(2, "0")}</span><span>{e}</span></li>)}
     </ul>
   </section>
 
@@ -45,27 +44,26 @@ const EDITORIAS = ["Saúde", "Educação", "Cultura", "Turismo", "Esporte", "Dir
 </SiteLayout>
 
 <style>
-  .ab-mission { display: grid; gap: 24px; padding-block: 8vh 12vh; }
-  .ab-quote { margin: 0; font-weight: 500; font-stretch: 80%; font-size: clamp(34px, 5.4vw, 92px); line-height: .98; text-transform: none; letter-spacing: -.03em; max-width: 20ch; }
-  .ab-quote em { font-style: italic; font-stretch: 110%; color: var(--color-gold); }
-  .ab-sign { color: var(--color-muted-foreground); }
-  .ab-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border-top: 1px solid var(--color-border); }
-  .ab-card { display: grid; gap: 16px; align-content: start; padding: 28px 28px 40px 0; border-right: 1px solid var(--color-border); min-height: 260px; }
-  .ab-card + .ab-card { padding-left: 28px; }
-  .ab-card:last-child { border-right: 0; }
-  .ab-card .label { color: var(--color-gold); }
-  .ab-ph { margin: 0; color: var(--color-muted-foreground); border: 1px dashed var(--color-border); padding: 16px; }
-  .ab-ed { padding-block: 12vh 6vh; }
-  .ab-ed h2 { margin: 0 0 24px; font-weight: 700; font-size: clamp(28px, 3vw, 44px); }
-  .ab-ed ul { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 4vw; }
-  .ab-ed li { display: flex; align-items: baseline; gap: 16px; padding-block: 14px; border-bottom: 1px solid var(--color-border); }
-  .ab-ed li .label { color: var(--color-gold); width: 28px; }
-  .ab-ed li .display { font-size: clamp(24px, 3vw, 44px); font-weight: 700; font-stretch: 70%; transition: font-stretch var(--t-cine) var(--ease-forged), color var(--t-std) var(--ease-forged); }
-  .ab-ed li:hover .display { font-stretch: 130%; color: var(--color-gold); }
-  .ab-cta { display: flex; flex-wrap: wrap; gap: 12px; padding-block: 6vh 4vh; }
+  .ab-mission { position: relative; display: grid; gap: 28px; padding-block: 10vh 14vh; }
+  .ab-mark { position: absolute; left: -.04em; top: 2vh; font-size: clamp(160px, 18vw, 300px); line-height: 1; color: transparent; -webkit-text-stroke: 1px rgba(215, 181, 101, .55); pointer-events: none; }
+  .ab-quote { position: relative; margin: 0; padding-left: clamp(40px, 7vw, 120px); font-family: var(--font-display); font-weight: 400; font-size: clamp(32px, 4.6vw, 78px); line-height: 1.05; letter-spacing: -.04em; max-width: 22ch; }
+  .ab-sign { padding-left: clamp(40px, 7vw, 120px); color: var(--color-mist); }
+  .ab-pillars { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border-top: 1px solid var(--color-border); }
+  .ab-pillar { display: grid; gap: 14px; align-content: start; padding: 32px 32px 48px 0; border-right: 1px solid var(--color-border); }
+  .ab-pillar + .ab-pillar { padding-left: 32px; }
+  .ab-pillar:last-child { border-right: 0; }
+  .ab-n { color: var(--color-gold); font-size: 34px; }
+  .ab-t { margin: 0; font-weight: 500; font-size: 26px; letter-spacing: -.02em; }
+  .ab-ph { margin: 0; color: var(--color-mist); border: 1px dashed var(--color-border); padding: 16px; }
+  .ab-ed { padding-block: 14vh 6vh; }
+  .ab-h { margin: 0 0 32px; font-weight: 500; font-size: clamp(32px, 3.4vw, 56px); letter-spacing: -.04em; }
+  .ab-ed ul { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 5vw; border-top: 1px solid var(--color-border); }
+  .ab-ed li { display: grid; grid-template-columns: 56px 1fr; align-items: baseline; padding-block: 18px; border-bottom: 1px solid var(--color-border); font-family: var(--font-display); font-size: clamp(22px, 2.2vw, 34px); letter-spacing: -.02em; }
+  .ab-ed li .numeral { color: var(--color-gold); font-size: 20px; }
+  .ab-cta { display: flex; flex-wrap: wrap; gap: 12px; padding-block: 6vh 0; }
   @media (max-width: 860px) {
-    .ab-grid { grid-template-columns: 1fr; }
-    .ab-card, .ab-card + .ab-card { padding: 24px 0; border-right: 0; border-bottom: 1px solid var(--color-border); min-height: 0; }
+    .ab-pillars { grid-template-columns: 1fr; }
+    .ab-pillar, .ab-pillar + .ab-pillar { padding: 28px 0; border-right: 0; border-bottom: 1px solid var(--color-border); }
     .ab-ed ul { grid-template-columns: 1fr; }
   }
 </style>

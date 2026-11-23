@@ -53,14 +53,14 @@ export default function CollectionView(props: {
           const img = fields.image ? imgAttrs(item[fields.image] as string, "(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw", 0.75) : {};
           return (
             <li key={item._id}>
-              <a href={`${basePath}/${String(item.slug ?? "")}`} className="group flex flex-col gap-3 text-foreground no-underline">
+              <a href={`${basePath}/${String(item.slug ?? "")}`} data-tx={"src" in img ? "expand" : undefined} className="group flex flex-col gap-3 text-foreground no-underline">
                 {"src" in img ? (
-                  <img {...img} alt={title} className="aspect-[4/3] w-full rounded-lg object-cover" />
+                  <img {...img} alt={title} className="aspect-[4/3] w-full object-cover transition-transform duration-[1200ms] ease-[cubic-bezier(.16,1,.3,1)] group-hover:scale-[1.04]" />
                 ) : (
-                  <div className="aspect-[4/3] w-full rounded-lg bg-secondary" aria-hidden="true" />
+                  <div className="relative aspect-[4/3] w-full border border-border bg-secondary" aria-hidden="true"><span className="absolute left-5 top-4 font-[family-name:var(--font-serif)] text-5xl text-transparent [-webkit-text-stroke:1px_var(--color-gold)]">{title.slice(0, 1)}</span></div>
                 )}
                 {fields.kicker && item[fields.kicker] ? <p className="eyebrow">{String(item[fields.kicker])}</p> : null}
-                <h2 className="min-w-0 break-words font-serif text-xl font-semibold group-hover:underline">{title}</h2>
+                <h2 className="min-w-0 break-words font-[family-name:var(--font-display)] text-2xl font-medium leading-tight tracking-[-.02em]">{title}</h2>
                 {fields.date && item[fields.date] ? (
                   <p className="text-sm text-muted-foreground">{formatDate(item[fields.date])}</p>
                 ) : null}

@@ -15,9 +15,9 @@
     "skills": "wix skills"
   },
   "dependencies": {
-    "@fontsource-variable/anybody": "5.3.0",
-    "@fontsource-variable/martian-mono": "5.3.0",
-    "@fontsource-variable/schibsted-grotesk": "5.3.0",
+    "@fontsource-variable/bricolage-grotesque": "5.3.0",
+    "@fontsource-variable/hanken-grotesk": "5.3.0",
+    "@fontsource/instrument-serif": "5.3.0",
     "@tailwindcss/vite": "^4.1.7",
     "@wix/astro": "^3.0.0",
     "@wix/astro-pages": "^3.0.0",

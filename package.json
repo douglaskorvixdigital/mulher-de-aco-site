@@ -5,6 +5,7 @@
   "scripts": {
     "astro": "astro",
     "dev": "wix dev",
+    "dev:local": "astro dev",
     "build": "wix build",
     "wix": "wix",
     "preview": "wix preview",

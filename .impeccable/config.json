@@ -1,0 +1,17 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "gradient-text",
+        "value": "*",
+        "files": [
+          "src/pages/index.astro"
+        ],
+        "createdAt": "2026-11-23T01:11:45.504Z",
+        "reason": "Claude decision: the gold sweep on 'Aço' reproduces the metallic gold-foil masthead of the printed cover (brand evidence), not decoration"
+      }
+    ]
+  }
+}

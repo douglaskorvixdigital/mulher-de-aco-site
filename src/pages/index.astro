@@ -1,85 +1,450 @@
 ---
-// Home — the magazine first, then reporting and the women's stories. Structural version: hero
-// design, imagery and motion come with DESIGN.md. Every section reads live from Wix.
+// Home — "one becomes many". A single gold point (one woman's story) becomes a globe of points
+// and routes (the stories of many women); the edition opens from a horizon; the sections of the
+// magazine pass like a route; the Power of M chapter brings daylight. Content reads live from Wix.
 import SiteLayout from "../layouts/SiteLayout.astro";
 import { queryItems } from "../wix/cms/items";
-import { formatDate } from "../wix/cms/items-core";
 import { fetchPosts } from "../wix/blog/posts";
 import { imgAttrs } from "../wix/media";
 import type { CmsItem } from "../wix/cms/types";
 import type { PostSummary } from "../wix/blog/types";
 
 let edition: CmsItem | null = null;
-let profiles: CmsItem[] = [];
 let posts: PostSummary[] = [];
 try {
-  const [eds, wos, feed] = await Promise.all([
+  const [eds, feed] = await Promise.all([
     queryItems("Editions", { sort: [{ field: "publishDate", direction: "desc" }], limit: 1 }),
-    queryItems("WomenOfSteel", { sort: [{ field: "publishDate", direction: "desc" }], limit: 3 }),
     fetchPosts({ limit: 3 }),
   ]);
   edition = eds.items[0] ?? null;
-  profiles = wos.items;
   posts = feed.posts;
 } catch {
-  // Guarded: each section below has an honest empty state.
+  // Guarded: each section has an honest fallback.
 }
 const editionHref = edition ? `/magazine/${String(edition.slug)}` : "/magazine";
-const cover = edition ? imgAttrs(edition.cover as string, "(min-width: 1024px) 40vw, 100vw", 0.75) : {};
+const coverSrc = edition?.cover ? String(edition.cover) : "/images/edicao-01-capa.webp";
+const pages = edition?.pages ? Number(edition.pages) : null;
+const price = edition?.priceUsd ? Number(edition.priceUsd) : null;
+const flipbook = edition?.flipbookUrl ? String(edition.flipbookUrl) : null;
+
+// The editorial sections the founder listed (orientations of 20 Nov 2026).
+const EDITORIAS = ["Saúde", "Educação", "Cultura", "Direitos humanos", "Turismo", "Esporte", "Meio ambiente", "Economia", "Política", "Gastronomia"];
 ---
-<SiteLayout>
-  <section class="grid items-center gap-10 lg:grid-cols-[3fr_2fr]">
-    <div class="flex flex-col gap-5">
-      <p class="eyebrow">International magazine by and about immigrant women</p>
-      <h1 class="font-serif text-4xl font-semibold sm:text-5xl">A Mulher de Aço / The Woman of Steel</h1>
-      <p class="max-w-xl text-lg text-muted-foreground">Read the quarterly magazine that gives visibility to the stories of women who rebuilt their lives across borders</p>
-      {edition && <p class="text-sm">{String(edition.issueLabel ?? "")} · {String(edition.slogan ?? "")}</p>}
-      <div class="flex flex-wrap gap-3">
-        <a href={editionHref} class="rounded-control bg-primary px-6 py-3 font-medium text-primary-foreground no-underline">Read the latest edition</a>
-        <a href="/partnerships" class="rounded-control border border-border px-6 py-3 font-medium text-foreground no-underline">Advertise with us</a>
+<SiteLayout bleed description="Revista internacional feita por e sobre mulheres que reconstruíram a vida do outro lado da fronteira.">
+  <div class="home">
+    <svg id="route" aria-hidden="true" preserveAspectRatio="none"><path d=""></path></svg>
+
+    <section class="hero gutter" aria-labelledby="h-title">
+      <canvas id="globe" aria-hidden="true"></canvas>
+      <div class="hero-meta label">
+        <span>Revista trimestral · Internacional</span>
+        <span class="hide-sm">{edition?.issueLabel ? String(edition.issueLabel) : "Edição 01"} · Novembro 2026</span>
       </div>
-    </div>
-    <a href={editionHref} aria-label="Latest edition" class="no-underline">
-      {"src" in cover
-        ? <img {...cover} loading="eager" alt={`Cover of ${String(edition?.issueLabel ?? "the latest edition")}`} class="w-full rounded-lg" />
-        : <div class="flex aspect-[3/4] w-full items-center justify-center rounded-lg bg-primary p-8 text-center font-serif text-2xl text-primary-foreground">{String(edition?.issueLabel ?? "The Woman of Steel")}</div>}
-    </a>
-  </section>
+      <div class="hero-body">
+        <h1 class="title display" id="h-title" aria-label="A Mulher de Aço">
+          <span class="line" data-split>A Mulher</span>
+          <span class="line" data-split>de <span class="gold">Aço</span></span>
+        </h1>
+        <p class="label sub">The Woman of Steel</p>
+        <div class="hero-foot">
+          <p class="lede">Uma revista internacional feita por e sobre mulheres que reconstruíram a vida do outro lado da fronteira. <em>Beyond Borders, Beyond Limits.</em></p>
+          <div class="actions">
+            <a class="btn btn-gold" href={editionHref}>Ler a Edição 01 <span class="arr" aria-hidden="true">→</span></a>
+            <a class="btn btn-line" href="/partnerships">Anunciar na revista</a>
+          </div>
+          <p class="label coords">São Paulo <b>23.55° S</b><br />Connecticut <b>41.60° N</b></p>
+        </div>
+      </div>
+      <span class="scroll-cue" aria-hidden="true"></span>
+    </section>
 
-  <section class="mt-24" aria-labelledby="home-reporting">
-    <div class="mb-8 flex items-baseline justify-between gap-4">
-      <h2 id="home-reporting" class="font-serif text-2xl font-semibold">Reporting</h2>
-      <a href="/blog" class="text-sm">All reporting</a>
-    </div>
-    {posts.length === 0
-      ? <p class="text-muted-foreground">No reporting has been published yet.</p>
-      : <ul class="grid gap-8 md:grid-cols-3">
-          {posts.map((p) => (
-            <li><a href={`/blog/${p.slug}`} class="flex flex-col gap-2 text-foreground no-underline">
-              <span class="font-serif text-lg font-semibold">{p.title}</span>
-              {p.excerpt && <span class="text-muted-foreground">{p.excerpt}</span>}
-            </a></li>
-          ))}
-        </ul>}
-  </section>
+    <section class="story gutter" aria-label="Missão">
+      <div class="story-inner">
+        <p class="eyebrow">A missão</p>
+        <p class="statement" id="statement">Nasce da história de <span class="g">uma mulher.</span> Existe para dar visibilidade às histórias de <span class="g">muitas.</span></p>
+      </div>
+    </section>
 
-  <section class="mt-24" aria-labelledby="home-wos">
-    <div class="mb-8 flex items-baseline justify-between gap-4">
-      <h2 id="home-wos" class="font-serif text-2xl font-semibold">Women of Steel</h2>
-      <a href="/women-of-steel" class="text-sm">All stories</a>
-    </div>
-    {profiles.length === 0
-      ? <p class="text-muted-foreground">No profiles have been published yet.</p>
-      : <ul class="grid gap-8 md:grid-cols-3">
-          {profiles.map((w) => (
-            <li><a href={`/women-of-steel/${String(w.slug)}`} class="flex flex-col gap-2 text-foreground no-underline">
-              {w.country && <span class="eyebrow">{String(w.country)}</span>}
-              <span class="font-serif text-lg font-semibold">{String(w.name ?? "")}</span>
-              {w.summary && <span class="text-muted-foreground">{String(w.summary)}</span>}
-              {w.publishDate && <span class="text-sm text-muted-foreground">{formatDate(w.publishDate)}</span>}
-            </a></li>
-          ))}
-        </ul>}
-    <a href="/share-your-story" class="mt-8 inline-block font-medium text-accent">Share your story</a>
-  </section>
+    <section class="marquee" aria-label="Manchetes da Edição 01">
+      <div class="mq-row a"><span>Leadership without borders</span><i></i><span>From Brazil to the world</span><i></i><span>Leadership without borders</span><i></i><span>From Brazil to the world</span><i></i></div>
+      <div class="mq-row b"><span>A strong woman, a brighter world</span><i></i><span>Real stories, real impact</span><i></i><span>A strong woman, a brighter world</span><i></i><span>Real stories, real impact</span><i></i></div>
+    </section>
+
+    <section class="edition gutter" aria-labelledby="ed-title">
+      <div class="ed-grid">
+        <div class="ed-copy">
+          <div class="ed-num display" aria-hidden="true">01</div>
+          <p class="eyebrow">{edition?.edition ? String(edition.edition) : "Edição internacional"} · Novembro 2026</p>
+          <h2 id="ed-title" class="display">A primeira edição já pode ser lida</h2>
+          <p>Liderança sem fronteiras, comunidade, cultura e a jornada de quem saiu do Brasil para o mundo.</p>
+          <dl class="specs">
+            {pages && <div><dt class="label">Páginas</dt><dd data-count={pages}>{pages}</dd></div>}
+            {price && <div><dt class="label">Preço</dt><dd>US$ <span data-count={price}>{price}</span></dd></div>}
+            <div><dt class="label">Idiomas</dt><dd>EN · PT</dd></div>
+          </dl>
+          <div class="actions">
+            {flipbook && <a class="btn btn-gold" href={flipbook} target="_blank" rel="noopener">Folhear a edição <span class="arr" aria-hidden="true">↗</span><span class="sr-only"> (abre em nova aba)</span></a>}
+            <a class="btn btn-line" href="/shop">Comprar</a>
+          </div>
+        </div>
+        <a class="cover-stage" href={editionHref} aria-label="Ver a Edição 01">
+          <span class="cover-tilt">
+            <span class="cover-mask">
+              <img src={coverSrc} alt="Capa da Edição 01 de A Mulher de Aço, novembro de 2026" width="612" height="807" loading="lazy" decoding="async" />
+              <span class="cover-sheen" aria-hidden="true"></span>
+            </span>
+          </span>
+          <span class="horizon" aria-hidden="true"></span>
+        </a>
+      </div>
+    </section>
+
+    <section class="routes" aria-labelledby="rt-title">
+      <div class="routes-head gutter">
+        <h2 id="rt-title" class="display">Editorias</h2>
+        <p>Reportagens por tema, escritas a partir da experiência de quem vive entre dois países.</p>
+      </div>
+      <div class="track">
+        {EDITORIAS.map((name, i) => (
+          <div class="route"><span class="label">{String(i + 1).padStart(2, "0")}</span><a href="/blog" class="display">{name}</a></div>
+        ))}
+      </div>
+    </section>
+
+    <section class="latest gutter" aria-labelledby="lt-title">
+      <div class="latest-head">
+        <h2 id="lt-title" class="display">Reportagens</h2>
+        <a href="/blog" class="link-draw label">Todas as reportagens</a>
+      </div>
+      {posts.length === 0
+        ? <p class="text-[var(--color-steel)]">As primeiras reportagens estão a caminho.</p>
+        : <ul class="cards">
+            {posts.map((p, i) => {
+              const img = imgAttrs(p.coverUrl, "(min-width: 900px) 33vw, 100vw", 0.75);
+              return (
+                <li>
+                  <a href={`/blog/${p.slug}`} class="card">
+                    <span class="card-img">
+                      {"src" in img ? <img {...img} alt="" /> : <span class="card-ph display" aria-hidden="true">{String(i + 1).padStart(2, "0")}</span>}
+                    </span>
+                    <span class="label card-n">{String(i + 1).padStart(2, "0")}</span>
+                    <span class="card-t">{p.title}</span>
+                    {p.excerpt && <span class="card-x">{p.excerpt}</span>}
+                  </a>
+                </li>
+              );
+            })}
+          </ul>}
+    </section>
+
+    <section class="power daylight gutter" aria-labelledby="pw-title">
+      <div class="power-grid">
+        <div class="bigM display" aria-hidden="true" style={`background-image:url('${coverSrc}')`}>M</div>
+        <div>
+          <p class="eyebrow">Capítulo · The Power of M</p>
+          <h2 id="pw-title" class="display">Uma mulher forte, um mundo mais luminoso</h2>
+          <ul class="pw-list">
+            <li><span class="label">01</span><span>Leadership without borders</span></li>
+            <li><span class="label">02</span><span>Education, sports, culture, community</span></li>
+            <li><span class="label">03</span><span>From Brazil to the world: a journey of faith, resilience and purpose</span></li>
+          </ul>
+          <a class="btn btn-line pw-btn" href="/about">Quem somos <span class="arr" aria-hidden="true">→</span></a>
+        </div>
+      </div>
+    </section>
+
+    <section class="partners gutter" aria-labelledby="pt-title">
+      <div class="p-inner">
+        <h2 id="pt-title" class="p-title">Sua marca diante de mulheres que <strong>atravessam fronteiras</strong></h2>
+        <div>
+          <p>Anúncios, patrocínios e parcerias em uma revista bilíngue lida nos Estados Unidos e fora deles.</p>
+          <span class="magnet"><a class="btn btn-gold" href="/partnerships">Falar com a equipe comercial <span class="arr" aria-hidden="true">→</span></a></span>
+        </div>
+      </div>
+    </section>
+  </div>
 </SiteLayout>
+
+<style is:global>
+  .home { position: relative; }
+  .home > section { position: relative; z-index: 1; }
+  #route { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; overflow: visible; }
+  #route path { fill: none; stroke: var(--color-gold); stroke-width: 1.2; opacity: .55; vector-effect: non-scaling-stroke; }
+
+  /* HERO */
+  .home .hero { min-height: 100svh; overflow: hidden; display: grid; grid-template-rows: auto 1fr; padding-top: calc(env(safe-area-inset-top, 0px) + 92px); padding-bottom: 40px; }
+  #globe { position: absolute; top: 50%; left: 62%; width: min(118vh, 105vw); height: min(118vh, 105vw); transform: translate(-50%, -48%); pointer-events: none; }
+  .hero-meta { position: relative; z-index: 2; display: flex; justify-content: space-between; gap: 16px; color: var(--color-steel); }
+  .hero-body { position: relative; z-index: 2; align-self: end; display: grid; gap: 22px; }
+  .home h1.title { margin: 0; font-weight: 850; line-height: .82; font-size: clamp(56px, 13.4vw, 230px); }
+  .home h1 .line { display: block; overflow: hidden; padding-bottom: .04em; }
+  .home h1 .ch { display: inline-block; font-stretch: calc(var(--w, 118) * 1%); will-change: transform; }
+  .home h1 .gold .ch { color: var(--color-gold); background: linear-gradient(100deg, var(--color-gold-deep) 0%, var(--color-gold) 35%, var(--color-gold-hot) 50%, var(--color-gold) 65%, var(--color-gold-deep) 100%); background-size: 250% 100%; -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; animation: mda-sweep 7s var(--ease-forged) infinite; }
+  @keyframes mda-sweep { 0%, 40% { background-position: 100% 0; } 100% { background-position: -50% 0; } }
+  .hero .sub { color: var(--color-gold); display: flex; align-items: center; gap: 12px; }
+  .hero .sub::before { content: ""; width: 40px; height: 1px; background: var(--color-gold); }
+  .hero-foot { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr) auto; gap: 32px; align-items: end; }
+  .lede { max-width: 34ch; font-size: clamp(17px, 1.4vw, 20px); color: #D8DCE5; margin: 0; }
+  .lede em { font-style: normal; color: var(--color-gold); }
+  .home .actions { display: flex; gap: 12px; flex-wrap: wrap; }
+  .coords { color: var(--color-steel); text-align: right; line-height: 1.8; margin: 0; }
+  .coords b { color: var(--color-gold); font-weight: 500; }
+  .scroll-cue { position: absolute; left: 50%; bottom: 16px; z-index: 2; width: 1px; height: 44px; background: linear-gradient(var(--color-gold), transparent); opacity: .7; }
+  @media (max-width: 900px) {
+    #globe { left: 72%; top: 36%; width: 130vw; height: 130vw; }
+    .hero-foot { grid-template-columns: 1fr; }
+    .coords { text-align: left; }
+    .hero-meta .hide-sm { display: none; }
+  }
+
+  /* STORY */
+  .home .story { min-height: 100svh; display: grid; align-items: center; }
+  .story-inner { display: grid; grid-template-columns: minmax(0, 3fr) minmax(0, 9fr); gap: 32px; align-items: start; }
+  .story-inner .eyebrow { padding-top: 14px; }
+  .statement { margin: 0; font-family: var(--font-display); font-weight: 500; font-stretch: 88%; font-size: clamp(34px, 5.2vw, 86px); line-height: 1; letter-spacing: -.025em; }
+  .statement .w { color: #3A4A69; transition: color var(--t-std) var(--ease-forged); }
+  .statement .w.on { color: var(--color-ivory); }
+  .statement .w.g.on { color: var(--color-gold); }
+  @media (max-width: 760px) { .story-inner { grid-template-columns: 1fr; } }
+
+  /* MARQUEE */
+  .home .marquee { padding-block: 8vh; overflow: hidden; display: grid; gap: 1.5vw; }
+  .mq-row { display: flex; align-items: center; gap: 3vw; white-space: nowrap; width: max-content; will-change: transform; font-family: var(--font-display); text-transform: uppercase; line-height: .9; font-size: clamp(44px, 9vw, 150px); letter-spacing: -.02em; }
+  .mq-row.a { font-weight: 900; font-stretch: 140%; color: var(--color-ivory); }
+  .mq-row.b { font-weight: 300; font-style: italic; font-stretch: 55%; color: transparent; -webkit-text-stroke: 1px var(--color-gold); }
+  .mq-row i { display: inline-block; width: .18em; height: .18em; border-radius: 50%; background: var(--color-gold); }
+
+  /* EDITION */
+  .home .edition { min-height: 100svh; display: grid; align-items: center; padding-block: 12vh; }
+  .ed-grid { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); gap: min(6vw, 80px); align-items: center; }
+  .ed-num { font-weight: 200; font-stretch: calc(var(--nw, 50) * 1%); font-size: clamp(120px, 22vw, 360px); line-height: .78; letter-spacing: -.04em; color: transparent; -webkit-text-stroke: 1px var(--color-gold); }
+  .ed-copy h2 { margin: 18px 0 14px; font-weight: 700; font-size: clamp(30px, 3.4vw, 52px); line-height: 1; }
+  .ed-copy > p:not(.eyebrow) { max-width: 40ch; color: #C9CFDB; margin: 0 0 24px; }
+  .specs { display: grid; grid-template-columns: repeat(3, auto); justify-content: start; gap: 28px; margin: 0 0 30px; padding: 18px 0; border-block: 1px solid var(--color-border); }
+  .specs dt { color: var(--color-steel); }
+  .specs dd { margin: 6px 0 0; font-family: var(--font-display); font-weight: 600; font-stretch: 110%; font-size: 28px; font-variant-numeric: tabular-nums; }
+  .cover-stage { position: relative; display: block; perspective: 1400px; }
+  .cover-tilt { display: block; transition: transform var(--t-std) var(--ease-forged); transform-style: preserve-3d; }
+  .cover-mask { position: relative; display: block; aspect-ratio: 612 / 807; width: min(100%, calc(74svh * 612 / 807)); margin-inline: auto; clip-path: inset(var(--ct, 0%) 0 var(--cb, 0%) 0); overflow: hidden; box-shadow: 0 40px 120px -40px #000; }
+  .cover-mask img { display: block; width: 100%; height: 100%; object-fit: cover; }
+  .cover-sheen { position: absolute; inset: 0; pointer-events: none; background: linear-gradient(115deg, transparent 35%, rgba(243, 216, 142, .35) 50%, transparent 65%); background-size: 250% 100%; background-position: 120% 0; transition: background-position var(--t-cine) var(--ease-forged); mix-blend-mode: screen; }
+  .cover-stage:hover .cover-sheen { background-position: -20% 0; }
+  .horizon { position: absolute; left: -6%; right: -6%; top: 50%; height: 1px; background: linear-gradient(90deg, transparent, var(--color-gold), transparent); opacity: 0; }
+  @media (max-width: 860px) { .ed-grid { grid-template-columns: 1fr; } .ed-num { font-size: 34vw; } }
+
+  /* EDITORIAS */
+  .home .routes { overflow: hidden; padding-block: 12vh 10vh; }
+  .routes-head { display: flex; justify-content: space-between; align-items: end; gap: 24px; margin-bottom: 6vh; }
+  .routes-head h2 { margin: 0; font-weight: 700; font-size: clamp(28px, 3vw, 44px); }
+  .routes-head p { margin: 0; max-width: 36ch; color: var(--color-steel); }
+  .track { display: flex; gap: 6vw; width: max-content; padding-left: max(var(--gutter), env(safe-area-inset-left, 0px)); padding-right: 30vw; will-change: transform; }
+  .route { display: grid; gap: 10px; }
+  .route .label { color: var(--color-steel); }
+  .route a { font-weight: 800; font-size: clamp(56px, 10vw, 170px); text-decoration: none; font-stretch: calc(var(--rw, 60) * 1%); color: transparent; -webkit-text-stroke: 1px #3A4A69; transition: color var(--t-std) var(--ease-forged), -webkit-text-stroke-color var(--t-std) var(--ease-forged), font-stretch var(--t-cine) var(--ease-forged); }
+  .route.lit a { color: var(--color-ivory); -webkit-text-stroke-color: transparent; }
+  .route a:hover, .route a:focus-visible { color: var(--color-gold); -webkit-text-stroke-color: transparent; --rw: 130; }
+  @media (max-width: 760px) {
+    .routes-head { flex-direction: column; align-items: flex-start; }
+    .track { flex-direction: column; width: auto; padding-right: max(var(--gutter), env(safe-area-inset-right, 0px)); gap: 28px; }
+    .route a { font-size: 15vw; color: var(--color-ivory); -webkit-text-stroke: 0; }
+  }
+
+  /* LATEST */
+  .home .latest { padding-block: 10vh 14vh; }
+  .latest-head { display: flex; justify-content: space-between; align-items: end; gap: 16px; margin-bottom: 40px; border-bottom: 1px solid var(--color-border); padding-bottom: 16px; }
+  .latest-head h2 { margin: 0; font-weight: 700; font-size: clamp(28px, 3vw, 44px); }
+  .latest-head a { color: var(--color-gold); }
+  .cards { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 28px; }
+  .card { display: grid; gap: 12px; text-decoration: none; color: inherit; }
+  .card-img { position: relative; display: block; aspect-ratio: 4 / 3; overflow: hidden; background: var(--color-secondary); clip-path: inset(0 0 0 0); transition: clip-path var(--t-cine) var(--ease-forged); }
+  .card-img img { width: 100%; height: 100%; object-fit: cover; transition: transform var(--t-cine) var(--ease-forged); }
+  .card:hover .card-img { clip-path: inset(3% 3% 3% 3%); }
+  .card:hover .card-img img { transform: scale(1.06); }
+  .card-ph { position: absolute; inset: 0; display: grid; place-items: center; font-size: 96px; font-weight: 200; font-stretch: 50%; color: transparent; -webkit-text-stroke: 1px #3A4A69; transition: font-stretch var(--t-cine) var(--ease-forged), -webkit-text-stroke-color var(--t-std) var(--ease-forged); }
+  .card:hover .card-ph { font-stretch: 150%; -webkit-text-stroke-color: var(--color-gold); }
+  .card-n { color: var(--color-gold); }
+  .card-t { font-family: var(--font-display); font-weight: 700; font-stretch: 85%; font-size: 24px; line-height: 1.05; text-transform: uppercase; }
+  .card-x { color: var(--color-steel); }
+  @media (max-width: 900px) { .cards { grid-template-columns: 1fr; } }
+
+  /* POWER OF M */
+  .home .power { padding-block: 14vh 16vh; overflow: hidden; }
+  .power-grid { display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); gap: 4vw; align-items: center; }
+  .bigM { font-weight: 900; font-size: clamp(240px, 46vw, 760px); line-height: .74; letter-spacing: -.05em; font-stretch: calc(var(--mw, 50) * 1%); background-position: 50% var(--my, 30%); background-size: 120% auto; background-repeat: no-repeat; -webkit-background-clip: text; background-clip: text; color: transparent; user-select: none; }
+  .power h2 { margin: 14px 0 26px; font-weight: 700; font-stretch: 92%; font-size: clamp(32px, 4vw, 64px); line-height: .95; }
+  .pw-list { list-style: none; margin: 0 0 32px; padding: 0; border-top: 1px solid var(--color-border); }
+  .pw-list li { display: grid; grid-template-columns: 44px 1fr; gap: 12px; padding: 16px 0; border-bottom: 1px solid var(--color-border); font-size: 17px; }
+  .pw-list .label { color: var(--color-gold-deep); padding-top: 3px; }
+  .power .pw-btn { color: var(--color-ink); border-color: var(--color-ink); }
+  @media (max-width: 860px) { .power-grid { grid-template-columns: 1fr; } .bigM { font-size: 70vw; } }
+
+  /* PARTNERS */
+  .home .partners { padding-block: 16vh; }
+  .p-inner { display: grid; grid-template-columns: minmax(0, 8fr) minmax(0, 4fr); gap: 4vw; align-items: end; }
+  .p-title { margin: 0; font-family: var(--font-display); font-weight: 300; font-stretch: 75%; font-size: clamp(40px, 6.4vw, 110px); line-height: .92; letter-spacing: -.03em; }
+  .p-title strong { font-weight: 850; font-stretch: 120%; color: var(--color-gold); }
+  .partners p { color: #C9CFDB; margin: 0 0 26px; max-width: 34ch; }
+  .magnet { display: inline-block; }
+  @media (max-width: 860px) { .p-inner { grid-template-columns: 1fr; } }
+
+  @media (prefers-reduced-motion: reduce) {
+    .statement .w { color: var(--color-ivory); }
+    .statement .w.g { color: var(--color-gold); }
+    .route a { color: var(--color-ivory); -webkit-text-stroke: 0; }
+  }
+</style>
+
+<script>
+  import { gsap } from "gsap";
+  import { ScrollTrigger } from "gsap/ScrollTrigger";
+  import { createGlobe } from "../scripts/globe";
+
+  const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const G = createGlobe(document.getElementById("globe") as HTMLCanvasElement, reduce);
+
+  // split the title into characters (screen readers read the h1's aria-label)
+  document.querySelectorAll<HTMLElement>("[data-split]").forEach((line) => {
+    const walk = (node: Node) => [...node.childNodes].forEach((n) => {
+      if (n.nodeType === 3) {
+        const frag = document.createDocumentFragment();
+        [...(n.textContent ?? "")].forEach((c) => {
+          const s = document.createElement("span");
+          s.className = "ch"; s.textContent = c === " " ? " " : c; s.setAttribute("aria-hidden", "true");
+          frag.appendChild(s);
+        });
+        (n as ChildNode).replaceWith(frag);
+      } else if (n.nodeType === 1) walk(n);
+    });
+    walk(line);
+  });
+
+  // statement words
+  const st = document.getElementById("statement")!;
+  const wrapWords = (el: Element) => [...el.childNodes].forEach((n) => {
+    if (n.nodeType === 3) {
+      const frag = document.createDocumentFragment();
+      (n.textContent ?? "").split(/(\s+)/).forEach((w) => {
+        if (!w.trim()) { frag.appendChild(document.createTextNode(w)); return; }
+        const s = document.createElement("span");
+        s.className = "w" + (el.classList.contains("g") ? " g" : ""); s.textContent = w;
+        frag.appendChild(s);
+      });
+      (n as ChildNode).replaceWith(frag);
+    } else if (n.nodeType === 1) wrapWords(n as Element);
+  });
+  wrapWords(st);
+  const words = [...st.querySelectorAll(".w")];
+
+  if (reduce) {
+    words.forEach((w) => w.classList.add("on"));
+    document.querySelectorAll(".route").forEach((r) => r.classList.add("lit"));
+  } else {
+    gsap.registerPlugin(ScrollTrigger);
+    // keep the timeline on the clock even when frames drop (low-power phones, background tabs):
+    // the opening must finish in ~3 s, never crawl.
+    gsap.ticker.lagSmoothing(0);
+    const chars = document.querySelectorAll(".home h1 .ch");
+
+    // INTRO: one point, then many; the name rises through its mask and widens
+    gsap.timeline({ defaults: { ease: "expo.out" } })
+      .set(chars, { yPercent: 115, "--w": 50 })
+      .to(G, { intro: 1, duration: 2.2, ease: "power3.inOut" }, 0.15)
+      .to(G, { arcs: 1, duration: 2.4, ease: "power2.out" }, 1.4)
+      .to(chars, { yPercent: 0, duration: 1.1, stagger: 0.035 }, 0.9)
+      .to(chars, { "--w": 118, duration: 1.6, ease: "power4.out", stagger: 0.035 }, 1.0)
+      .from(".hero-meta, .hero .sub, .lede, .hero .actions .btn, .coords", { autoAlpha: 0, y: 18, duration: 0.9, stagger: 0.07 }, 1.6)
+      .from(".scroll-cue", { scaleY: 0, transformOrigin: "top", duration: 0.8 }, 2.2);
+
+    // hero leaves: globe sinks and dims, the name compresses
+    gsap.timeline({ scrollTrigger: { trigger: ".home .hero", start: "top top", end: "bottom top", scrub: true } })
+      .to(G, { scale: 1.35, dim: 0.35, ease: "none" }, 0)
+      .to(".home h1.title", { yPercent: -18, ease: "none" }, 0)
+      .fromTo(chars, { "--w": 118 }, { "--w": 70, ease: "none", immediateRender: false }, 0);
+
+    // STORY: the words light as the reader advances
+    ScrollTrigger.create({
+      trigger: ".home .story", start: "top top", end: "+=140%", pin: true, scrub: true,
+      onUpdate: (s) => { const n = Math.round(s.progress * words.length * 1.1); words.forEach((w, i) => w.classList.toggle("on", i < n)); },
+    });
+
+    // MARQUEE: the cover's headlines travel in opposite directions
+    gsap.timeline({ scrollTrigger: { trigger: ".home .marquee", start: "top bottom", end: "bottom top", scrub: 0.6 } })
+      .fromTo(".mq-row.a", { xPercent: 0 }, { xPercent: -30, ease: "none" }, 0)
+      .fromTo(".mq-row.b", { xPercent: -30 }, { xPercent: 0, ease: "none" }, 0);
+
+    // EDITION: the cover opens from a horizon, out of a close-up on the globe
+    const mask = document.querySelector<HTMLElement>(".cover-mask")!;
+    gsap.timeline({ scrollTrigger: { trigger: ".home .edition", start: "top 70%", end: "center center", scrub: 1 } })
+      .fromTo(mask, { "--ct": "49.5%", "--cb": "49.5%" }, { "--ct": "0%", "--cb": "0%", ease: "power2.inOut" }, 0)
+      .fromTo(mask.querySelector("img"), { scale: 2.8, transformOrigin: "52% 33%" }, { scale: 1, ease: "power2.inOut" }, 0)
+      .fromTo(".horizon", { opacity: 1, scaleX: 0.2 }, { opacity: 0, scaleX: 1.1, ease: "power2.out" }, 0)
+      .fromTo(".ed-num", { "--nw": 50 }, { "--nw": 150, ease: "none" }, 0);
+    document.querySelectorAll<HTMLElement>("[data-count]").forEach((el) => {
+      const to = Number(el.dataset.count), o = { v: 0 };
+      gsap.to(o, { v: to, duration: 1.4, ease: "power3.out", scrollTrigger: { trigger: el, start: "top 85%" }, onUpdate: () => { el.textContent = String(Math.round(o.v)); } });
+    });
+    const stage = document.querySelector<HTMLElement>(".cover-stage")!, tilt = stage.querySelector<HTMLElement>(".cover-tilt")!;
+    stage.addEventListener("pointermove", (e) => {
+      const r = stage.getBoundingClientRect(), x = (e.clientX - r.left) / r.width - 0.5, y = (e.clientY - r.top) / r.height - 0.5;
+      tilt.style.transform = `rotateY(${x * 7}deg) rotateX(${-y * 7}deg)`;
+    });
+    stage.addEventListener("pointerleave", () => { tilt.style.transform = ""; });
+
+    // EDITORIAS: a horizontal route on wide screens; the word at the centre lights
+    const mm = gsap.matchMedia();
+    mm.add("(min-width: 761px)", () => {
+      const track = document.querySelector<HTMLElement>(".track")!;
+      const routes = [...document.querySelectorAll<HTMLElement>(".route")];
+      const dist = () => track.scrollWidth - innerWidth;
+      gsap.to(track, {
+        x: () => -dist(), ease: "none",
+        scrollTrigger: {
+          trigger: ".home .routes", start: "top top", end: () => "+=" + dist(), pin: true, scrub: 1, invalidateOnRefresh: true,
+          onUpdate: () => { const c = innerWidth / 2; routes.forEach((r) => { const b = r.getBoundingClientRect(); r.classList.toggle("lit", b.left < c && b.right > c * 0.6); }); },
+        },
+      });
+    });
+    mm.add("(max-width: 760px)", () => { document.querySelectorAll(".route").forEach((r) => r.classList.add("lit")); });
+
+    // LATEST: cards rise through their own mask, once
+    gsap.from(".cards li", { yPercent: 12, autoAlpha: 0, duration: 1, ease: "expo.out", stagger: 0.08, scrollTrigger: { trigger: ".cards", start: "top 80%" } });
+
+    // POWER OF M: the letter widens, the cover moves inside it
+    gsap.timeline({ scrollTrigger: { trigger: ".home .power", start: "top bottom", end: "bottom top", scrub: true } })
+      .fromTo(".bigM", { "--mw": 50, "--my": "10%" }, { "--mw": 150, "--my": "60%", ease: "none" }, 0);
+    gsap.from(".pw-list li", { yPercent: 100, autoAlpha: 0, duration: 0.9, ease: "expo.out", stagger: 0.08, scrollTrigger: { trigger: ".pw-list", start: "top 80%" } });
+
+    // PARTNERS: the main commercial action answers the pointer
+    const mag = document.querySelector<HTMLElement>(".magnet")!;
+    mag.addEventListener("pointermove", (e) => {
+      const r = mag.getBoundingClientRect();
+      gsap.to(mag, { x: (e.clientX - r.left - r.width / 2) * 0.25, y: (e.clientY - r.top - r.height / 2) * 0.35, duration: 0.5, ease: "power3.out" });
+    });
+    mag.addEventListener("pointerleave", () => gsap.to(mag, { x: 0, y: 0, duration: 0.8, ease: "elastic.out(1,.4)" }));
+    gsap.from(".p-title", { yPercent: 30, autoAlpha: 0, duration: 1.1, ease: "expo.out", scrollTrigger: { trigger: ".home .partners", start: "top 75%" } });
+
+    // ROUTE: one continuous gold line drawn by the scroll, from hero to the commercial call
+    const svg = document.getElementById("route") as unknown as SVGSVGElement, path = svg.querySelector("path")!;
+    const home = document.querySelector<HTMLElement>(".home")!;
+    const build = () => {
+      const w = home.offsetWidth, h = home.offsetHeight;
+      svg.setAttribute("viewBox", `0 0 ${w} ${h}`);
+      const secs = [...home.querySelectorAll<HTMLElement>(":scope > section")];
+      let d = `M ${w * 0.62} ${innerHeight * 0.5}`;
+      secs.forEach((s, i) => {
+        const y = s.offsetTop + s.offsetHeight * 0.5, x = i % 2 ? w * 0.12 : w * 0.88;
+        d += ` C ${x} ${s.offsetTop}, ${x} ${y - s.offsetHeight * 0.25}, ${w * (i % 2 ? 0.3 : 0.7)} ${y}`;
+      });
+      path.setAttribute("d", d);
+      const len = path.getTotalLength();
+      path.style.strokeDasharray = String(len);
+      return len;
+    };
+    let len = build();
+    ScrollTrigger.create({
+      trigger: home, start: "top top", end: "bottom bottom", scrub: 0.4,
+      onUpdate: (s) => { path.style.strokeDashoffset = String(len * (1 - s.progress)); },
+      onRefresh: () => { len = build(); },
+    });
+  }
+</script>

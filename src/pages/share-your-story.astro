@@ -1,5 +1,5 @@
 ---
-// Share your story — the Wix form schema is fetched SERVER-SIDE so the first paint has the fields.
+// Envie sua história — the Wix form schema is fetched SERVER-SIDE so the first paint has the fields.
 import SiteLayout from "../layouts/SiteLayout.astro";
 import WixFormView from "../components/forms/WixFormView";
 import { getForm } from "../wix/forms/forms";
@@ -13,14 +13,14 @@ try {
   // Guarded: the island loads the schema itself and shows the real error if it fails again.
 }
 ---
-<SiteLayout title="Tell us the story of a woman of steel" description="Your own story or the story of another immigrant woman. The editorial team reads every submission, and nothing is published without approval">
+<SiteLayout title="Conte a história de uma mulher de aço" description="A sua história ou a de outra mulher imigrante. A redação lê cada envio, e nada é publicado sem aprovação">
   <div class="grid gap-12 lg:grid-cols-[2fr_3fr]">
     <div>
-      <p class="eyebrow">Share your story</p>
-      <h1 class="mb-4 font-serif text-3xl font-semibold">Tell us the story of a woman of steel</h1>
-      <p class="max-w-md text-muted-foreground">Your own story or the story of another immigrant woman. The editorial team reads every submission, and nothing is published without approval</p>
+      <p class="eyebrow">Envie sua história</p>
+      <h1 class="display mb-4 text-[clamp(40px,6vw,88px)] font-extrabold leading-[.9]">Conte a história de uma mulher de aço</h1>
+      <p class="max-w-md text-muted-foreground">A sua história ou a de outra mulher imigrante. A redação lê cada envio, e nada é publicado sem aprovação</p>
       
     </div>
-    <WixFormView client:load formId={FORM_ID} initialForm={form ?? undefined} submitLabel="Submit story" />
+    <WixFormView client:load formId={FORM_ID} initialForm={form ?? undefined} submitLabel="Enviar história" />
   </div>
 </SiteLayout>

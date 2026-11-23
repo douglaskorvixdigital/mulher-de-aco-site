@@ -1,6 +1,7 @@
 ---
 // Events — items fetched SERVER-SIDE (SEO) from the Wix CMS collection "Events".
 import SiteLayout from "../layouts/SiteLayout.astro";
+import PageHero from "../components/PageHero.astro";
 import CollectionView from "../components/cms/CollectionView";
 import { queryItems } from "../wix/cms/items";
 import type { CmsPage } from "../wix/cms/types";
@@ -13,9 +14,7 @@ try {
   // Guarded: the island renders its own empty/error state.
 }
 ---
-<SiteLayout title="Events of the magazine" description="Launches, meetings and gatherings organized by A Mulher de Aço">
-  <p class="eyebrow">Events</p>
-  <h1 class="mb-3 font-serif text-3xl font-semibold">Events of the magazine</h1>
-  <p class="mb-10 max-w-2xl text-muted-foreground">Launches, meetings and gatherings organized by A Mulher de Aço</p>
-  <CollectionView client:load collectionId="Events" basePath="/events" fields={FIELDS} emptyText="No events are scheduled right now." sort={SORT} limit={12} initialItems={page.items} initialHasNext={page.hasNext} />
+<SiteLayout title="Eventos" description="Lançamentos, encontros e eventos organizados pela A Mulher de Aço.">
+  <PageHero eyebrow="Eventos" title="Encontros da revista" intro="Lançamentos, encontros e eventos organizados pela A Mulher de Aço."></PageHero>
+  <CollectionView client:load collectionId="Events" basePath="/events" fields={FIELDS} emptyText="Nenhum evento agendado no momento." sort={SORT} limit={12} initialItems={page.items} initialHasNext={page.hasNext} />
 </SiteLayout>

@@ -4,6 +4,7 @@
 // to the category pages (/blog/category/<slug>) so every filter has a URL; pass no `categoryHref`
 // for client-side filtering instead.
 import SiteLayout from "../layouts/SiteLayout.astro";
+import PageHero from "../components/PageHero.astro";
 import BlogFeedView from "../components/blog/BlogFeedView";
 import { categoryPath, fetchPosts } from "../wix/blog/posts";
 import { fetchBlogCategories, fetchBlogTags } from "../wix/blog/taxonomy";
@@ -22,9 +23,8 @@ try {
 }
 ---
 
-<SiteLayout>
-  <p class="eyebrow">Reporting</p>
-  <h1 class="mb-8 font-serif text-3xl font-semibold">Stories and reporting from the magazine</h1>
+<SiteLayout title="Reportagens" description="Histórias e reportagens por editoria, a partir da experiência de quem vive entre dois países.">
+  <PageHero eyebrow="Reportagens" title="Reportagens" intro="Histórias e reportagens por editoria, a partir da experiência de quem vive entre dois países."></PageHero>
   <BlogFeedView
     client:load
     initialPage={failed ? undefined : page}

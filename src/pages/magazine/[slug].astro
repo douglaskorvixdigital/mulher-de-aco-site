@@ -1,10 +1,12 @@
 ---
-// One magazine edition. CMS collections have no owner-editable SEO type: plain title/description.
+// One edition — the immersive page: the issue number forged at full width, the cover as an object
+// you can turn toward the light, the cover's own headlines running past, then the facts and actions.
+// CMS collections have no owner-editable SEO type: plain title/description.
 import SiteLayout from "../../layouts/SiteLayout.astro";
 import { getItemBy } from "../../wix/cms/items";
 import { formatDate } from "../../wix/cms/items-core";
-import { imgAttrs, imgRatio } from "../../wix/media";
 import type { CmsItem } from "../../wix/cms/types";
+
 let item: CmsItem | null = null;
 try {
   item = await getItemBy("Editions", "slug", Astro.params.slug!);
@@ -12,30 +14,106 @@ try {
   // Guarded: an unhandled SSR throw truncates the response mid-stream.
 }
 if (!item) return new Response(null, { status: 404 });
+
 const title = String(item.title ?? "");
-const cover = imgAttrs(item.cover as string, "(min-width: 1024px) 40vw, 100vw", imgRatio(item.cover as string) ?? 0.75);
+const issue = String(item.issueLabel ?? title);
+const cover = item.cover ? String(item.cover) : "/images/edicao-01-capa.webp";
+const summary = item.summary ? String(item.summary) : "";
+const isPlaceholder = summary.includes("[Placeholder]");
+const HEADLINES = ["Leadership without borders", "A strong woman, a brighter world", "From Brazil to the world", "Education · Sports · Culture · Community"];
 ---
-<SiteLayout title={`${item.issueLabel ?? title}`} description={`${title} — ${item.issueLabel ?? ""}`}>
-  <article class="grid gap-10 lg:grid-cols-[2fr_3fr]">
-    {"src" in cover
-      ? <img {...cover} loading="eager" alt={`Cover of ${title}, ${item.issueLabel ?? ""}`} class="w-full rounded-lg" />
-      : <div class="aspect-[3/4] w-full rounded-lg bg-secondary" aria-hidden="true"></div>}
-    <div class="flex flex-col gap-4">
-      {item.edition && <p class="eyebrow">{String(item.edition)}</p>}
-      <h1 class="font-serif text-4xl font-semibold">{title}</h1>
-      {item.issueLabel && <p class="text-xl">{String(item.issueLabel)}</p>}
-      {item.slogan && <p class="text-muted-foreground">{String(item.slogan)}</p>}
-      <dl class="grid grid-cols-2 gap-4 text-sm sm:grid-cols-3">
-        {item.publishDate && <div><dt class="text-muted-foreground">Published</dt><dd>{formatDate(item.publishDate, "en-US", { month: "long", year: "numeric" })}</dd></div>}
-        {item.pages && <div><dt class="text-muted-foreground">Pages</dt><dd>{String(item.pages)}</dd></div>}
-        {item.priceUsd && <div><dt class="text-muted-foreground">Price</dt><dd>US$ {String(item.priceUsd)}</dd></div>}
-      </dl>
-      {item.summary && <div class="max-w-prose" set:html={String(item.summary)} />}
-      <div class="mt-4 flex flex-wrap gap-3">
-        {item.flipbookUrl && <a href={String(item.flipbookUrl)} target="_blank" rel="noopener" class="rounded-control bg-primary px-6 py-3 font-medium text-primary-foreground no-underline">Read the edition<span class="sr-only"> (opens in a new tab)</span></a>}
-        <a href="/shop" class="rounded-control border border-border px-6 py-3 font-medium text-foreground no-underline">Buy in the shop</a>
-      </div>
-      {item.credits && <p class="mt-6 text-sm text-muted-foreground">{String(item.credits)}</p>}
+<SiteLayout title={issue} description={`${title}, ${issue}. ${item.slogan ?? ""}`} bleed>
+  <section class="ed-hero gutter" aria-labelledby="ed-h">
+    <div class="ed-top">
+      <a href="/magazine" class="label link-draw">← Todas as edições</a>
+      {item.publishDate && <p class="label">{formatDate(item.publishDate, "pt-BR", { month: "long", year: "numeric" })}</p>}
     </div>
-  </article>
+    <h1 id="ed-h" class="display ed-title"><span class="ed-mask"><span class="ed-in">{issue}</span></span></h1>
+    <div class="ed-body">
+      <div class="ed-meta">
+        {item.edition && <p class="eyebrow">{String(item.edition)}</p>}
+        <p class="ed-name">{title}</p>
+        {item.slogan && <p class="ed-slogan display">{String(item.slogan)}</p>}
+        <dl class="ed-specs">
+          {item.pages && <div><dt class="label">Páginas</dt><dd>{String(item.pages)}</dd></div>}
+          {item.priceUsd && <div><dt class="label">Preço</dt><dd>US$ {String(item.priceUsd)}</dd></div>}
+          <div><dt class="label">Idiomas</dt><dd>EN · PT</dd></div>
+        </dl>
+        <div class="ed-actions">
+          {item.flipbookUrl && <a href={String(item.flipbookUrl)} target="_blank" rel="noopener" class="btn btn-gold">Folhear a edição <span class="arr" aria-hidden="true">↗</span><span class="sr-only"> (abre em nova aba)</span></a>}
+          <a href="/shop" class="btn btn-line">Comprar na loja</a>
+        </div>
+      </div>
+      <div class="ed-stage" data-hover>
+        <div class="ed-tilt">
+          <img src={cover} alt={`Capa de ${title}, ${issue}`} width="612" height="807" loading="eager" />
+          <span class="ed-sheen" aria-hidden="true"></span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="ed-run" aria-label="Manchetes desta edição">
+    <div class="ed-track">
+      {[...HEADLINES, ...HEADLINES].map((h, i) => <span class={i % 2 ? "o" : ""}>{h}<i aria-hidden="true"></i></span>)}
+    </div>
+  </section>
+
+  <section class="ed-more gutter" aria-label="Sobre a edição">
+    <div class={`ed-summary ${isPlaceholder ? "ph" : ""}`} set:html={summary.replace("[Placeholder] Edition summary pending approval by the editorial team.", "[Texto provisório] Resumo da edição aguardando aprovação da redação.")} />
+    {item.credits && <p class="label ed-credits">{String(item.credits).replace("Design:", "Design:").replace("Proofreading:", "Revisão:")}</p>}
+  </section>
 </SiteLayout>
+
+<style>
+  .ed-hero { min-height: 100svh; padding-top: calc(env(safe-area-inset-top, 0px) + 96px); padding-bottom: 8vh; display: grid; gap: 4vh; align-content: start; }
+  .ed-top { display: flex; justify-content: space-between; gap: 16px; color: var(--color-steel); }
+  .ed-top a { color: var(--color-gold); }
+  .ed-title { margin: 0; font-weight: 900; font-size: clamp(52px, 11vw, 200px); line-height: .82; }
+  .ed-mask { display: block; overflow: hidden; padding-bottom: .05em; }
+  .ed-in { display: block; animation: ed-rise 1.2s var(--ease-forged) both .1s, ed-forge 2s var(--ease-forged) both .15s; }
+  @keyframes ed-rise { from { transform: translateY(105%); } to { transform: none; } }
+  @keyframes ed-forge { from { font-stretch: 50%; } to { font-stretch: 120%; } }
+  .ed-body { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); gap: 6vw; align-items: center; }
+  .ed-meta { display: grid; gap: 18px; align-content: start; }
+  .ed-name { margin: 0; font-size: clamp(18px, 1.5vw, 22px); }
+  .ed-slogan { margin: 0; font-weight: 300; font-style: italic; font-stretch: 60%; font-size: clamp(32px, 4vw, 64px); color: var(--color-gold); text-transform: none; line-height: .95; }
+  .ed-specs { display: grid; grid-template-columns: repeat(3, auto); justify-content: start; gap: 28px; margin: 8px 0; padding: 18px 0; border-block: 1px solid var(--color-border); }
+  .ed-specs dt { color: var(--color-steel); }
+  .ed-specs dd { margin: 6px 0 0; font-family: var(--font-display); font-weight: 600; font-stretch: 110%; font-size: 28px; }
+  .ed-actions { display: flex; flex-wrap: wrap; gap: 12px; }
+  .ed-stage { perspective: 1400px; justify-self: center; width: min(100%, calc(76svh * 612 / 807)); animation: ed-open 1.4s var(--ease-forged) both .35s; }
+  @keyframes ed-open { from { clip-path: inset(49.5% 0 49.5% 0); transform: scale(1.06); } to { clip-path: inset(0 0 0 0); transform: none; } }
+  .ed-tilt { position: relative; transition: transform var(--t-std) var(--ease-forged); transform-style: preserve-3d; box-shadow: 0 50px 140px -40px #000; }
+  .ed-tilt img { display: block; width: 100%; height: auto; }
+  .ed-sheen { position: absolute; inset: 0; pointer-events: none; background: linear-gradient(115deg, transparent 35%, rgba(243, 216, 142, .35) 50%, transparent 65%); background-size: 250% 100%; background-position: 120% 0; transition: background-position var(--t-cine) var(--ease-forged); mix-blend-mode: screen; }
+  .ed-stage:hover .ed-sheen { background-position: -20% 0; }
+
+  .ed-run { overflow: hidden; border-block: 1px solid var(--color-border); padding-block: 4vh; }
+  .ed-track { display: flex; width: max-content; gap: 3vw; animation: ed-marquee 40s linear infinite; }
+  .ed-run:hover .ed-track { animation-play-state: paused; }
+  .ed-track span { display: inline-flex; align-items: center; gap: 3vw; white-space: nowrap; font-family: var(--font-display); text-transform: uppercase; font-size: clamp(40px, 7vw, 120px); line-height: 1; font-weight: 900; font-stretch: 130%; letter-spacing: -.02em; }
+  .ed-track span.o { font-weight: 300; font-style: italic; font-stretch: 55%; color: transparent; -webkit-text-stroke: 1px var(--color-gold); }
+  .ed-track i { width: .18em; height: .18em; border-radius: 50%; background: var(--color-gold); }
+  @keyframes ed-marquee { to { transform: translateX(-50%); } }
+
+  .ed-more { padding-block: 12vh; display: grid; gap: 24px; max-width: 900px; }
+  .ed-summary { font-size: clamp(20px, 2vw, 28px); line-height: 1.4; }
+  .ed-summary.ph { font-size: 16px; color: var(--color-muted-foreground); border: 1px dashed var(--color-border); padding: 16px; }
+  .ed-credits { color: var(--color-steel); }
+
+  @media (max-width: 860px) { .ed-body { grid-template-columns: 1fr; } .ed-stage { order: -1; } }
+  @media (prefers-reduced-motion: reduce) { .ed-in, .ed-stage, .ed-track { animation: none; } }
+</style>
+
+<script>
+  const stage = document.querySelector<HTMLElement>(".ed-stage");
+  const tilt = stage?.querySelector<HTMLElement>(".ed-tilt");
+  if (stage && tilt && !matchMedia("(prefers-reduced-motion: reduce)").matches && matchMedia("(hover: hover)").matches) {
+    stage.addEventListener("pointermove", (e) => {
+      const r = stage.getBoundingClientRect(), x = (e.clientX - r.left) / r.width - 0.5, y = (e.clientY - r.top) / r.height - 0.5;
+      tilt.style.transform = `rotateY(${x * 9}deg) rotateX(${-y * 9}deg)`;
+    });
+    stage.addEventListener("pointerleave", () => { tilt.style.transform = ""; });
+  }
+</script>

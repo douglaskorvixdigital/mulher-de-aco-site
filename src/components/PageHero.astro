@@ -1,0 +1,33 @@
+---
+// Opening of every interior page: an index label, the title rising through its mask while it
+// widens (the same "forged" gesture as the Home, in CSS only), and a short intro.
+interface Props {
+  eyebrow: string;
+  title: string;
+  intro?: string;
+  index?: string;
+}
+const { eyebrow, title, intro, index } = Astro.props;
+---
+<header class="page-hero">
+  <div class="ph-top">
+    <p class="eyebrow">{eyebrow}</p>
+    {index && <p class="label ph-index">{index}</p>}
+  </div>
+  <h1 class="display ph-title"><span class="ph-mask"><span class="ph-in">{title}</span></span></h1>
+  {intro && <p class="ph-intro">{intro}</p>}
+  <slot />
+</header>
+
+<style>
+  .page-hero { display: grid; gap: 20px; padding-bottom: 48px; margin-bottom: 56px; border-bottom: 1px solid var(--color-border); }
+  .ph-top { display: flex; justify-content: space-between; gap: 16px; }
+  .ph-index { color: var(--color-muted-foreground); }
+  .ph-title { margin: 0; font-weight: 800; font-size: clamp(44px, 8vw, 128px); line-height: .88; max-width: 16ch; }
+  .ph-mask { display: block; overflow: hidden; padding-bottom: .06em; }
+  .ph-in { display: block; animation: ph-rise 1.1s var(--ease-forged) both .1s, ph-forge 1.6s var(--ease-forged) both .15s; }
+  .ph-intro { margin: 0; max-width: 52ch; font-size: clamp(17px, 1.4vw, 20px); color: var(--color-muted-foreground); }
+  @keyframes ph-rise { from { transform: translateY(105%); } to { transform: none; } }
+  @keyframes ph-forge { from { font-stretch: 60%; } to { font-stretch: 100%; } }
+  @media (prefers-reduced-motion: reduce) { .ph-in { animation: none; } }
+</style>

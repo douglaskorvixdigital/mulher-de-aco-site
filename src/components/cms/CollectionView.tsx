@@ -27,7 +27,7 @@ export default function CollectionView(props: {
   const list = useCollection(collectionId, options);
 
   if (list.error && !list.items) {
-    return <p role="alert" className="text-destructive">This list could not be loaded. Please try again later.</p>;
+    return <p role="alert" className="text-destructive">Não foi possível carregar esta lista. Tente novamente mais tarde.</p>;
   }
   if (list.items === null) {
     return (
@@ -79,7 +79,7 @@ export default function CollectionView(props: {
           disabled={list.loadingMore}
           className="mt-10 rounded-control border border-border px-5 py-2.5 text-sm font-medium disabled:opacity-50"
         >
-          {list.loadingMore ? "Loading…" : "Load more"}
+          {list.loadingMore ? "Carregando…" : "Carregar mais"}
         </button>
       ) : null}
     </div>

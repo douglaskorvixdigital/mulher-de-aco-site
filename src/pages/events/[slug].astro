@@ -17,14 +17,14 @@ const image = imgAttrs(item.image as string, "(min-width: 1024px) 60vw, 100vw", 
 ---
 <SiteLayout title={title} description={String(item.summary ?? title)}>
   <article class="flex max-w-3xl flex-col gap-5">
-    <a href="/events" class="text-sm text-muted-foreground">← All events</a>
+    <a href="/events" class="text-sm text-muted-foreground">← Todos os eventos</a>
     {item.location && <p class="eyebrow">{String(item.location)}</p>}
-    <h1 class="font-serif text-4xl font-semibold">{title}</h1>
+    <h1 class="display text-[clamp(36px,6vw,88px)] font-extrabold leading-[.9]">{title}</h1>
     {item.startDate && <p class="text-muted-foreground">{formatDate(item.startDate)}</p>}
     {"src" in image
       ? <img {...image} loading="eager" alt={title} class="w-full rounded-lg" />
       : null}
     {item.description && <div class="max-w-prose" set:html={String(item.description)} />}
-    {item.registrationUrl && <a href={String(item.registrationUrl)} target="_blank" rel="noopener" class="self-start rounded-control bg-primary px-6 py-3 font-medium text-primary-foreground no-underline">Register<span class="sr-only"> (opens in a new tab)</span></a>}
+    {item.registrationUrl && <a href={String(item.registrationUrl)} target="_blank" rel="noopener" class="self-start rounded-control bg-primary px-6 py-3 font-medium text-primary-foreground no-underline">Inscrever-se<span class="sr-only"> (abre em nova aba)</span></a>}
   </article>
 </SiteLayout>

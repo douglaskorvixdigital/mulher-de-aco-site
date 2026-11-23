@@ -1,10 +1,6 @@
 ---
-// The site chrome for every page. Structural version: the visual design (DESIGN.md) comes next.
-// Keep (kit contract):
-//   - the <slot name="seo-tags" /> in <head> (item pages' owner-editable SEO lands there)
-//   - the global.css import (Tailwind + the design tokens every shipped component reads)
-//   - one <CartButton> in the header and one <CartDrawer> per page (both client:only)
-//   - shop category links from the live tree (`/category/<slug>`)
+// Site chrome. Kit contract kept: the seo-tags slot, the global.css import, one CartButton in the
+// header and one CartDrawer per page (both client:only), shop category links from the live tree.
 import CartButton from "../components/storefront/CartButton";
 import CartDrawer from "../components/storefront/CartDrawer";
 import { fetchCategories } from "../wix/storefront/catalog";
@@ -14,18 +10,26 @@ import "../styles/global.css";
 interface Props {
   title?: string;
   description?: string;
+  /** "night" (default) or "daylight": the page's ground. */
+  ground?: "night" | "daylight";
+  /** Pages that build their own full-bleed opening skip the top padding. */
+  bleed?: boolean;
 }
-const { title, description } = Astro.props;
+const { title, description, ground = "night", bleed = false } = Astro.props;
 
 const NAV = [
-  { href: "/magazine", label: "The Magazine" },
-  { href: "/blog", label: "Reporting" },
-  { href: "/women-of-steel", label: "Women of Steel" },
-  { href: "/about-the-founder", label: "About the Founder" },
-  { href: "/events", label: "Events" },
-  { href: "/shop", label: "Shop" },
-  { href: "/partnerships", label: "Partnerships & Advertising" },
-  { href: "/contact", label: "Contact" },
+  { href: "/magazine", label: "A Revista" },
+  { href: "/blog", label: "Reportagens" },
+  { href: "/women-of-steel", label: "Mulheres de Aço" },
+  { href: "/about", label: "Quem somos" },
+  { href: "/events", label: "Eventos" },
+  { href: "/shop", label: "Loja" },
+  { href: "/partnerships", label: "Parcerias" },
+];
+const MORE = [
+  { href: "/about-the-founder", label: "A fundadora" },
+  { href: "/share-your-story", label: "Envie sua história" },
+  { href: "/contact", label: "Contato" },
 ];
 
 let shopCategories: Category[] = [];
@@ -35,73 +39,163 @@ try {
   /* the shop link still reaches everything */
 }
 const path = Astro.url.pathname;
+const isCurrent = (href: string) => path === href || path.startsWith(href + "/");
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang="pt-BR" data-ground={ground}>
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="theme-color" content={ground === "daylight" ? "#EEEAE1" : "#050D1C"} />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     {title && !Astro.slots.has("seo-tags") && <title>{title} · A Mulher de Aço</title>}
     {description && <meta name="description" content={description} />}
     <slot name="seo-tags" />
+    <slot name="head" />
+    <style is:global>
+      @view-transition { navigation: auto; }
+      ::view-transition-old(root) { animation: 420ms cubic-bezier(.55,0,.75,.2) both mda-out; }
+      ::view-transition-new(root) { animation: 640ms cubic-bezier(.22,1,.36,1) both mda-in; }
+      @keyframes mda-out { to { opacity: 0; transform: translateY(-2vh); } }
+      @keyframes mda-in { from { opacity: 0; clip-path: inset(100% 0 0 0); } to { opacity: 1; clip-path: inset(0 0 0 0); } }
+      @media (prefers-reduced-motion: reduce) {
+        ::view-transition-old(root), ::view-transition-new(root) { animation: none; }
+      }
+    </style>
   </head>
-  <body class="flex min-h-screen flex-col">
-    <a href="#main" class="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:bg-background focus:px-3 focus:py-2">Skip to content</a>
-    <header class="sticky top-0 z-40 border-b border-border bg-background/90 backdrop-blur">
-      <div class="flex h-16 items-center justify-between gap-6 px-6 lg:px-10">
-        <a href="/" class="shrink-0 font-serif text-lg font-semibold tracking-tight text-foreground no-underline">
-          A Mulher de Aço
-          <span class="sr-only"> / The Woman of Steel</span>
-        </a>
-        <nav aria-label="Main" class="hidden items-center gap-5 text-sm xl:flex">
-          {NAV.map((item) => (
-            <a
-              href={item.href}
-              aria-current={path === item.href || path.startsWith(item.href + "/") ? "page" : undefined}
-              class="text-foreground no-underline transition-colors hover:text-muted-foreground aria-[current=page]:text-accent"
-            >{item.label}</a>
-          ))}
-        </nav>
-        <div class="flex items-center gap-4">
-          <CartButton client:only="react" />
-          <details class="relative xl:hidden">
-            <summary class="cursor-pointer list-none text-sm font-medium">Menu</summary>
-            <nav aria-label="Main (mobile)" class="absolute right-0 top-10 flex w-64 flex-col gap-1 rounded-lg border border-border bg-background p-3 shadow-lg">
-              {NAV.map((item) => (
-                <a href={item.href} class="rounded-sm px-2 py-2 text-foreground no-underline hover:bg-secondary">{item.label}</a>
-              ))}
-            </nav>
-          </details>
-        </div>
+  <body class={ground === "daylight" ? "daylight" : ""}>
+    <a href="#main" class="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[80] focus:rounded-full focus:bg-[var(--color-gold)] focus:px-4 focus:py-2 focus:text-[var(--color-night)]">Pular para o conteúdo</a>
+    <div class="grain" aria-hidden="true"></div>
+    <div class="cursor" aria-hidden="true"></div>
+
+    <header class="site-top gutter">
+      <a class="mark" href="/" aria-label="A Mulher de Aço, início">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><ellipse cx="12" cy="12" rx="4.2" ry="10"/><path d="M2 12h20M4 7h16M4 17h16"/></svg>
+        <span>Mulher de Aço</span>
+      </a>
+      <nav class="nav-main" aria-label="Principal">
+        {NAV.map((item) => (
+          <a href={item.href} class="link-draw" aria-current={isCurrent(item.href) ? "page" : undefined}>{item.label}</a>
+        ))}
+      </nav>
+      <div class="top-actions">
+        <span class="label lang" aria-label="Idioma: português. Inglês em breve"><b>PT</b> / <span>EN</span></span>
+        <CartButton client:only="react" />
+        <button class="menu-btn label" type="button" aria-expanded="false" aria-controls="menu-panel">Menu</button>
       </div>
     </header>
 
-    <main id="main" class="flex-1 px-6 py-10 lg:px-10">
+    <div id="menu-panel" class="menu-panel" hidden>
+      <nav aria-label="Menu" class="gutter">
+        {[...NAV, ...MORE].map((item, i) => (
+          <a href={item.href} aria-current={isCurrent(item.href) ? "page" : undefined}>
+            <span class="label">{String(i + 1).padStart(2, "0")}</span>
+            <span class="display">{item.label}</span>
+          </a>
+        ))}
+      </nav>
+    </div>
+
+    <main id="main" class:list={["site-main", { "gutter pt-32 pb-24": !bleed }]}>
       <slot />
     </main>
 
-    <footer class="border-t border-border px-6 py-12 text-sm text-muted-foreground lg:px-10">
-      <div class="grid gap-8 md:grid-cols-3">
-        <div>
-          <p class="font-serif text-base font-semibold text-foreground">A Mulher de Aço / The Woman of Steel</p>
-          <p class="mt-1">Beyond Borders, Beyond Limits</p>
+    <footer class="site-foot gutter">
+      <div class="f-grid">
+        <div class="f-col">
+          <p class="eyebrow">A Mulher de Aço · The Woman of Steel</p>
+          <p class="f-tag">Beyond Borders, Beyond Limits</p>
         </div>
-        <nav aria-label="Footer" class="flex flex-col gap-2">
-          {NAV.map((item) => <a href={item.href} class="text-muted-foreground no-underline hover:text-foreground">{item.label}</a>)}
-          <a href="/share-your-story" class="text-muted-foreground no-underline hover:text-foreground">Share your story</a>
-          {shopCategories.map((c) => (
-            <a href={`/category/${c.slug}`} class="text-muted-foreground no-underline hover:text-foreground">Shop · {c.name}</a>
-          ))}
+        <nav aria-label="Rodapé" class="f-col">
+          {[...NAV, ...MORE].map((item) => <a href={item.href} class="link-draw">{item.label}</a>)}
+          {shopCategories.map((c) => <a href={`/category/${c.slug}`} class="link-draw">Loja · {c.name}</a>)}
         </nav>
-        <div class="flex flex-col gap-2">
-          <a href="mailto:editorial@amulherdeaco.com" class="text-muted-foreground no-underline hover:text-foreground">editorial@amulherdeaco.com</a>
-          <a href="tel:+12032975498" class="text-muted-foreground no-underline hover:text-foreground">+1 203-297-5498</a>
+        <div class="f-col">
+          <p class="label text-[var(--color-steel)]">Redação</p>
+          <p class="select-all">editorial@amulherdeaco.com</p>
+          <p class="select-all">+1 203-297-5498</p>
         </div>
       </div>
-      <p class="mt-10">© {new Date().getFullYear()} A Mulher de Aço</p>
+      <div class="f-word display" aria-hidden="true">Mulher de Aço</div>
+      <p class="label f-legal">© {new Date().getFullYear()} A Mulher de Aço</p>
     </footer>
     <CartDrawer client:only="react" />
+
+    <style>
+      .site-top {
+        position: fixed; top: env(safe-area-inset-top, 0px); left: 0; right: 0; z-index: 50;
+        display: flex; align-items: center; justify-content: space-between; gap: 24px;
+        padding-block: 16px; color: #fff; mix-blend-mode: difference;
+      }
+      .mark { display: flex; align-items: center; gap: 10px; text-decoration: none;
+        font-family: var(--font-display); font-weight: 800; font-size: 15px; font-stretch: 125%;
+        text-transform: uppercase; letter-spacing: .02em; white-space: nowrap; }
+      .mark svg { width: 20px; height: 20px; transition: transform 1.2s var(--ease-forged); }
+      .mark:hover svg { transform: rotate(180deg); }
+      .nav-main { display: flex; gap: 24px; font-size: 13px; }
+      .top-actions { display: flex; align-items: center; gap: 16px; }
+      .lang { opacity: .85 } .lang span { opacity: .55 }
+      .menu-btn { display: none; background: none; border: 1px solid currentColor; color: inherit;
+        padding: 9px 14px; border-radius: 9999px; cursor: pointer; }
+      @media (max-width: 1100px) { .nav-main, .lang { display: none; } .menu-btn { display: block; } }
+
+      .menu-panel { position: fixed; inset: 0; z-index: 45; background: var(--color-night);
+        padding-top: calc(env(safe-area-inset-top, 0px) + 96px); overflow-y: auto; }
+      .menu-panel nav { display: grid; gap: 4px; }
+      .menu-panel a { display: flex; align-items: baseline; gap: 16px; padding-block: 8px;
+        border-bottom: 1px solid var(--color-border); text-decoration: none; color: var(--color-ivory); }
+      .menu-panel .label { color: var(--color-gold); width: 28px; }
+      .menu-panel .display { font-size: clamp(32px, 9vw, 64px); font-weight: 700; font-stretch: 90%; }
+
+      .site-foot { border-top: 1px solid var(--color-border); padding-block: 56px 32px;
+        background: var(--color-night); color: var(--color-ivory); display: grid; gap: 40px; }
+      .f-grid { display: grid; grid-template-columns: 1.2fr 1fr 1fr; gap: 32px; }
+      .f-col { display: flex; flex-direction: column; gap: 8px; align-items: flex-start; min-width: 0; }
+      .f-col a { text-decoration: none; color: var(--color-steel); }
+      .f-col a:hover { color: var(--color-ivory); }
+      .f-tag { font-family: var(--font-display); font-size: 22px; font-weight: 300; font-stretch: 80%; }
+      .f-word { font-weight: 900; font-size: clamp(44px, 12.5vw, 220px); line-height: .8; white-space: nowrap;
+        overflow: hidden; color: var(--color-navy); -webkit-text-stroke: 1px var(--color-border);
+        font-stretch: 60%; transition: font-stretch 1.2s var(--ease-forged), color var(--t-std) var(--ease-forged); }
+      .f-word:hover { font-stretch: 150%; color: var(--color-gold); -webkit-text-stroke-color: transparent; }
+      .f-legal { color: var(--color-steel); }
+      @media (max-width: 800px) { .f-grid { grid-template-columns: 1fr; } }
+
+      .cursor { position: fixed; left: 0; top: 0; width: 10px; height: 10px; margin: -5px 0 0 -5px; border-radius: 50%;
+        background: var(--color-gold); pointer-events: none; z-index: 70; mix-blend-mode: difference; display: none;
+        transition: width var(--t-std) var(--ease-forged), height var(--t-std) var(--ease-forged), margin var(--t-std) var(--ease-forged); }
+      .cursor.big { width: 64px; height: 64px; margin: -32px 0 0 -32px; }
+      @media (hover: hover) and (pointer: fine) { .cursor { display: block; } }
+      @media (prefers-reduced-motion: reduce) { .cursor { display: none !important; } }
+    </style>
+
+    <script>
+      // menu
+      const btn = document.querySelector<HTMLButtonElement>(".menu-btn");
+      const panel = document.getElementById("menu-panel");
+      btn?.addEventListener("click", () => {
+        const open = btn.getAttribute("aria-expanded") === "true";
+        btn.setAttribute("aria-expanded", String(!open));
+        btn.textContent = open ? "Menu" : "Fechar";
+        if (panel) panel.hidden = open;
+        document.documentElement.style.overflow = open ? "" : "hidden";
+      });
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape" && btn?.getAttribute("aria-expanded") === "true") btn.click();
+      });
+      // cursor: a gold point that follows, grows over anything clickable
+      const cur = document.querySelector<HTMLElement>(".cursor");
+      if (cur && matchMedia("(hover: hover) and (pointer: fine)").matches && !matchMedia("(prefers-reduced-motion: reduce)").matches) {
+        let x = innerWidth / 2, y = innerHeight / 2, cx = x, cy = y;
+        addEventListener("pointermove", (e) => { x = e.clientX; y = e.clientY; }, { passive: true });
+        const tick = () => { cx += (x - cx) * 0.22; cy += (y - cy) * 0.22; cur.style.transform = `translate(${cx}px, ${cy}px)`; requestAnimationFrame(tick); };
+        tick();
+        document.addEventListener("pointerover", (e) => {
+          const t = (e.target as Element)?.closest?.("a, button, [data-hover], summary, label");
+          cur.classList.toggle("big", !!t);
+        });
+      }
+    </script>
   </body>
 </html>

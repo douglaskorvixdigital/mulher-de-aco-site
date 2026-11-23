@@ -20,14 +20,14 @@ export default function WixFormView({ formId, initialForm, submitLabel }: { form
     }
     return (
       <div role="status" className="rounded-lg border border-border p-6">
-        {(f.outcome.message || "Thank you. Your message was sent.").split("\n").map((p, i) => <p key={i}>{p}</p>)}
-        <button type="button" onClick={f.reset} className="mt-4 text-sm underline">Send another</button>
+        {(f.outcome.message || "Obrigado. Sua mensagem foi enviada.").split("\n").map((p, i) => <p key={i}>{p}</p>)}
+        <button type="button" onClick={f.reset} className="mt-4 text-sm underline">Enviar outra</button>
       </div>
     );
   }
   if (f.errors[FORM_ERROR] && !f.form) return <p role="alert" className="text-destructive">{f.errors[FORM_ERROR]}</p>;
   if (!f.form) return <div className="h-96 animate-pulse rounded-lg bg-secondary" aria-busy="true" />;
-  if (f.closed) return <p>{f.form.disabledMessage || "This form is not accepting responses right now."}</p>;
+  if (f.closed) return <p>{f.form.disabledMessage || "Este formulário não está recebendo respostas no momento."}</p>;
 
   const step = f.form.steps[f.step];
   const last = f.step === f.form.steps.length - 1;
@@ -45,7 +45,7 @@ export default function WixFormView({ formId, initialForm, submitLabel }: { form
         ) : null}
         {last ? (
           <button type="submit" disabled={f.loading} className="rounded-control bg-primary px-6 py-2.5 font-medium text-primary-foreground disabled:opacity-50">
-            {f.loading ? "Sending…" : f.form.submitText || submitLabel}
+            {f.loading ? "Enviando…" : f.form.submitText || submitLabel}
           </button>
         ) : (
           <button type="button" onClick={(e) => f.next(e)} className="rounded-control bg-primary px-6 py-2.5 font-medium text-primary-foreground">{f.form.nextText || "Continue"}</button>
@@ -83,7 +83,7 @@ function Field({ field, f }: { field: FormFieldDto; f: ReturnType<typeof useWixF
       <label className="flex flex-col gap-2" htmlFor={id}>
         {label}{help}
         <select id={id} {...f.bind(field.target)} aria-invalid={!!error} aria-describedby={describe} className={fieldClass}>
-          <option value="">Choose…</option>
+          <option value="">Escolha…</option>
           {field.choices.map((c) => <option key={c.value} value={c.value}>{c.label}</option>)}
         </select>
         {errorText}
@@ -166,7 +166,7 @@ function Field({ field, f }: { field: FormFieldDto; f: ReturnType<typeof useWixF
   }
   const type = INPUT_TYPES[field.control];
   if (!type) {
-    return <p className="text-sm text-muted-foreground">The field “{field.label}” is not available on this page.</p>;
+    return <p className="text-sm text-muted-foreground">O campo “{field.label}” não está disponível nesta página.</p>;
   }
   return (
     <label className="flex flex-col gap-2" htmlFor={id}>

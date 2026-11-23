@@ -55,7 +55,9 @@ export function createGlobe(canvas: HTMLCanvasElement, reduce: boolean): GlobeSt
 
   let W = 0, H = 0;
   const size = () => {
-    const dpr = Math.min(2, devicePixelRatio || 1), r = canvas.getBoundingClientRect();
+    // (perf) the canvas is ~118vh square: at DPR 2 that is a 4-megapixel clear+fill each frame.
+    // 1.5 keeps the dots crisp at a little over half the pixels.
+    const dpr = Math.min(1.5, devicePixelRatio || 1), r = canvas.getBoundingClientRect();
     W = r.width; H = r.height; canvas.width = W * dpr; canvas.height = H * dpr;
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     if (reduce) draw();

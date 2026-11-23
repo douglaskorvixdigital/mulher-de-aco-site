@@ -287,7 +287,14 @@ const EDITORIAS = ["Saúde", "Educação", "Cultura", "Direitos humanos", "Turis
   .magnet { display: inline-block; }
   @media (max-width: 860px) { .p-inner { grid-template-columns: 1fr; } }
 
+  /* perf: the scrubbed width/background on these glyphs re-lays and repaints them every frame;
+     containment keeps that work inside the glyph's own box instead of the whole section */
+  .ed-num, .bigM { contain: layout paint; }
+  /* perf: the page-long route repaints a page-tall SVG layer while scrolling; phones skip it */
+  @media (max-width: 760px) { #route { display: none; } }
+
   @media (prefers-reduced-motion: reduce) {
+    #route { display: none; }
     .statement .w { color: var(--color-ivory); }
     .statement .w.g { color: var(--color-gold); }
     .route a { color: var(--color-ivory); -webkit-text-stroke: 0; }
@@ -358,8 +365,9 @@ const EDITORIAS = ["Saúde", "Educação", "Cultura", "Direitos humanos", "Turis
     // hero leaves: globe sinks and dims, the name compresses
     gsap.timeline({ scrollTrigger: { trigger: ".home .hero", start: "top top", end: "bottom top", scrub: true } })
       .to(G, { scale: 1.35, dim: 0.35, ease: "none" }, 0)
-      .to(".home h1.title", { yPercent: -18, ease: "none" }, 0)
-      .fromTo(chars, { "--w": 118 }, { "--w": 70, ease: "none", immediateRender: false }, 0);
+      .to(".home h1.title", { yPercent: -18, ease: "none" }, 0);
+    // (perf) the exit no longer scrubs font-stretch on every scroll frame: width changes re-lay the
+    // whole title; transform alone carries the departure.
 
     // STORY: the words light as the reader advances
     ScrollTrigger.create({
@@ -375,7 +383,8 @@ const EDITORIAS = ["Saúde", "Educação", "Cultura", "Direitos humanos", "Turis
     // EDITION: the cover opens from a horizon, out of a close-up on the globe
     const mask = document.querySelector<HTMLElement>(".cover-mask")!;
     gsap.timeline({ scrollTrigger: { trigger: ".home .edition", start: "top 70%", end: "center center", scrub: 1 } })
-      .fromTo(mask, { "--ct": "49.5%", "--cb": "49.5%" }, { "--ct": "0%", "--cb": "0%", ease: "power2.inOut" }, 0)
+      // clip-path tweened directly (not through inherited custom properties that restyle the children)
+      .fromTo(mask, { clipPath: "inset(49.5% 0% 49.5% 0%)" }, { clipPath: "inset(0% 0% 0% 0%)", ease: "power2.inOut" }, 0)
       .fromTo(mask.querySelector("img"), { scale: 2.8, transformOrigin: "52% 33%" }, { scale: 1, ease: "power2.inOut" }, 0)
       .fromTo(".horizon", { opacity: 1, scaleX: 0.2 }, { opacity: 0, scaleX: 1.1, ease: "power2.out" }, 0)
       .fromTo(".ed-num", { "--nw": 50 }, { "--nw": 150, ease: "none" }, 0);
@@ -396,13 +405,23 @@ const EDITORIAS = ["Saúde", "Educação", "Cultura", "Direitos humanos", "Turis
       const track = document.querySelector<HTMLElement>(".track")!;
       const routes = [...document.querySelectorAll<HTMLElement>(".route")];
       const dist = () => track.scrollWidth - innerWidth;
-      gsap.to(track, {
+      // (perf) positions are measured once per refresh, never read from the DOM while scrolling:
+      // a getBoundingClientRect per item per frame forced a style/layout flush on every scroll frame.
+      let spans: { left: number; right: number }[] = [];
+      const measure = () => { spans = routes.map((r) => ({ left: r.offsetLeft, right: r.offsetLeft + r.offsetWidth })); };
+      measure();
+      const tween = gsap.to(track, {
         x: () => -dist(), ease: "none",
         scrollTrigger: {
           trigger: ".home .routes", start: "top top", end: () => "+=" + dist(), pin: true, scrub: 1, invalidateOnRefresh: true,
-          onUpdate: () => { const c = innerWidth / 2; routes.forEach((r) => { const b = r.getBoundingClientRect(); r.classList.toggle("lit", b.left < c && b.right > c * 0.6); }); },
+          onRefresh: measure,
+          onUpdate: () => {
+            const x = Number(gsap.getProperty(track, "x")), c = innerWidth / 2;
+            spans.forEach((s, i) => routes[i].classList.toggle("lit", s.left + x < c && s.right + x > c * 0.6));
+          },
         },
       });
+      return () => tween.kill();
     });
     mm.add("(max-width: 760px)", () => { document.querySelectorAll(".route").forEach((r) => r.classList.add("lit")); });
 
@@ -440,11 +459,14 @@ const EDITORIAS = ["Saúde", "Educação", "Cultura", "Direitos humanos", "Turis
       path.style.strokeDasharray = String(len);
       return len;
     };
+    // (perf) hidden on phones and under reduced motion: no path to build, nothing to scrub
+    if (getComputedStyle(svg).display !== "none") {
     let len = build();
     ScrollTrigger.create({
       trigger: home, start: "top top", end: "bottom bottom", scrub: 0.4,
       onUpdate: (s) => { path.style.strokeDashoffset = String(len * (1 - s.progress)); },
       onRefresh: () => { len = build(); },
     });
+    }
   }
 </script>

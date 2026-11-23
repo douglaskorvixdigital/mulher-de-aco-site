@@ -6,6 +6,8 @@ import CartDrawer from "../components/storefront/CartDrawer";
 import { fetchCategories } from "../wix/storefront/catalog";
 import type { Category } from "../wix/storefront/types";
 import "../styles/global.css";
+// (perf) the display face sets every page's first headline: fetch it with the HTML, not after the CSS
+import displayFont from "@fontsource-variable/anybody/files/anybody-latin-wdth-normal.woff2?url";
 
 interface Props {
   title?: string;
@@ -49,6 +51,11 @@ const isCurrent = (href: string) => path === href || path.startsWith(href + "/")
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <meta name="theme-color" content={ground === "daylight" ? "#EEEAE1" : "#050D1C"} />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="preload" href={displayFont} as="font" type="font/woff2" crossorigin />
+    <meta property="og:site_name" content="A Mulher de Aço" />
+    {title && <meta property="og:title" content={`${title} · A Mulher de Aço`} />}
+    {description && <meta property="og:description" content={description} />}
+    <meta property="og:image" content={new URL("/images/edicao-01-capa.webp", Astro.url).href} />
     {title && !Astro.slots.has("seo-tags") && <title>{title} · A Mulher de Aço</title>}
     {description && <meta name="description" content={description} />}
     <slot name="seo-tags" />
@@ -187,10 +194,17 @@ const isCurrent = (href: string) => path === href || path.startsWith(href + "/")
       // cursor: a gold point that follows, grows over anything clickable
       const cur = document.querySelector<HTMLElement>(".cursor");
       if (cur && matchMedia("(hover: hover) and (pointer: fine)").matches && !matchMedia("(prefers-reduced-motion: reduce)").matches) {
-        let x = innerWidth / 2, y = innerHeight / 2, cx = x, cy = y;
-        addEventListener("pointermove", (e) => { x = e.clientX; y = e.clientY; }, { passive: true });
-        const tick = () => { cx += (x - cx) * 0.22; cy += (y - cy) * 0.22; cur.style.transform = `translate(${cx}px, ${cy}px)`; requestAnimationFrame(tick); };
-        tick();
+        // (perf) the follow loop runs only while the point is catching up, then sleeps
+        let x = innerWidth / 2, y = innerHeight / 2, cx = x, cy = y, running = false;
+        const tick = () => {
+          cx += (x - cx) * 0.22; cy += (y - cy) * 0.22;
+          cur.style.transform = `translate(${cx}px, ${cy}px)`;
+          if (Math.abs(x - cx) + Math.abs(y - cy) > 0.3) requestAnimationFrame(tick); else running = false;
+        };
+        addEventListener("pointermove", (e) => {
+          x = e.clientX; y = e.clientY;
+          if (!running) { running = true; requestAnimationFrame(tick); }
+        }, { passive: true });
         document.addEventListener("pointerover", (e) => {
           const t = (e.target as Element)?.closest?.("a, button, [data-hover], summary, label");
           cur.classList.toggle("big", !!t);
